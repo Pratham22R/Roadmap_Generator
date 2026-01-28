@@ -23,6 +23,7 @@ model User {
   roadmaps            Roadmap[]
   sessions            Session[]
   subscription        Subscription?
+  emailLogs           EmailLog[]
 }
 
 model Account {
@@ -209,4 +210,17 @@ model SkillProgress {
   skill       TemplateSkill @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
   @@unique([roadmapId, skillId])
+}
+
+model EmailLog {
+  id          String   @id @default(cuid())
+  userId      String
+  emailType   String
+  status      String   // "QUEUED", "SENT", "FAILED"
+  triggeredAt DateTime @default(now())
+  sentAt      DateTime?
+  errorMessage String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
