@@ -1,70 +1,68 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Brain, Layers, Zap, Clock, Share2, Award } from "lucide-react"
+import { Compass, BookOpen, BarChart3, Repeat, Bell, Layout } from "lucide-react"
 
 const features = [
   {
-    title: "AI-Powered Generation",
-    description: "Leverage advanced AI to create comprehensive, step-by-step learning paths for any skill or technology.",
-    icon: Brain,
-    color: "text-purple-500",
+    title: "Smart Roadmaps",
+    description: "AI-generated learning paths based on your experience level and goals.",
+    icon: Compass,
   },
   {
     title: "Curated Resources",
-    description: "Get the best articles, videos, and courses automatically selected for each topic in your roadmap.",
-    icon: Layers,
-    color: "text-blue-500",
+    description: "Each topic includes hand-picked YouTube videos and official documentation.",
+    icon: BookOpen,
   },
   {
-    title: "Personalized Pace",
-    description: "Roadmaps adapt to your timeline and current skill level, ensuring efficiently learning.",
-    icon: Clock,
-    color: "text-green-500",
+    title: "Progress Tracking",
+    description: "Track completed skills, milestones, and visualize your journey.",
+    icon: BarChart3,
   },
   {
-    title: "Instant Updates",
-    description: "Technology moves fast. Regenerate roadmaps to keep up with the latest industry standards.",
-    icon: Zap,
-    color: "text-yellow-500",
+    title: "Template Reuse",
+    description: "Identical roadmaps reuse cached templates for instant generation.",
+    icon: Repeat,
   },
   {
-    title: "Track Progress",
-    description: "Mark topics as complete and visualize your journey from beginner to expert.",
-    icon: Award,
-    color: "text-orange-500",
+    title: "Smart Notifications",
+    description: "Get email reminders and weekly summaries to stay on track.",
+    icon: Bell,
   },
   {
-    title: "Share & Export",
-    description: "Share your roadmaps with friends or export them to keep your learning organized.",
-    icon: Share2,
-    color: "text-pink-500",
+    title: "Interactive UI",
+    description: "A clean, drag-and-drop interface to manage your learning tasks.",
+    icon: Layout,
   },
 ]
 
 export function Features() {
   return (
-    <section id="features" className="py-24 bg-muted/30">
-        <div className="container mx-auto px-4 md:px-6">
-            <div className="text-center max-w-2xl mx-auto mb-16">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">Everything you need to master new skills</h2>
-                <p className="text-muted-foreground text-lg">Stop wasting time searching for tutorials. Get a structured plan that guides you from zero to hero.</p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {features.map((feature, index) => (
-                    <Card key={index} className="border-muted bg-background/50 hover:bg-background/80 transition-colors hover:border-primary/50 shadow-sm hover:shadow-md">
-                        <CardHeader>
-                            <feature.icon className={`h-10 w-10 mb-2 ${feature.color}`} />
-                            <CardTitle className="text-xl">{feature.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">
-                                {feature.description}
-                            </p>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+    <section id="features" className="py-24 bg-white">
+      <div className="container mx-auto px-6 max-w-[1200px]">
+        <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+          <h2 className="text-3xl font-bold tracking-tight text-[#0f172a] sm:text-4xl">
+            Everything you need to master new skills
+          </h2>
+          <p className="text-[#475569] text-lg">
+            Stop wasting time searching for tutorials. Get a structured plan that guides you from zero to hero.
+          </p>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              className="group p-8 rounded-2xl bg-white border border-slate-100 shadow-[0px_4px_20px_rgba(0,0,0,0.02)] hover:shadow-[0px_10px_30px_rgba(0,0,0,0.06)] hover:border-slate-200 transition-all duration-300"
+            >
+              <div className="h-12 w-12 bg-slate-50 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <feature.icon className="h-6 w-6 text-[#0f172a]" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-bold text-[#0f172a] mb-3">{feature.title}</h3>
+              <p className="text-[#475569] leading-relaxed">
+                {feature.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }
