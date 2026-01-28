@@ -1,5 +1,5 @@
 import { getPrisma } from "@/lib/prisma"
-import RoadmapView from "@/components/roadmap/roadmap-view"
+import RoadmapView from "@/components/roadmap/roadmap-view-dynamic"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 
@@ -12,6 +12,7 @@ interface DetailedRoadmapPageProps {
 export default async function DetailedRoadmapPage({ params }: DetailedRoadmapPageProps) {
     const session = await auth()
     if (!session?.user?.id) return redirect("/login")
+
 
     const { id } = await params
     const prisma = getPrisma()

@@ -3,6 +3,7 @@
 import { auth } from "@/auth"
 import { getPrisma } from "@/lib/prisma"
 import { generateRoadmap } from "@/lib/ai/roadmap-generator"
+import { triggerWelcomeEmail } from "@/actions/trigger-welcome-email";
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
@@ -80,6 +81,10 @@ export async function submitOnboarding(data: z.infer<typeof onboardingSchema>) {
       targetDuration: validatedFields.data.targetDuration,
       currentSkills: validatedFields.data.currentSkills
     })
+
+    if (!session.user.onboardingCompleted) {
+      await triggerWelcomeEmail(session.user);
+    }
 
     return { success: true }
   } catch (error) {

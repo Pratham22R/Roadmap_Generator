@@ -3,6 +3,7 @@ import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { getPrisma } from "@/lib/prisma"
+import { inngest } from "@/lib/inngest/client"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -11,7 +12,7 @@ export const {
   handlers,
   auth,
   signIn,
-// @ts-expect-error - PrismaAdapter vs AdapterUser type mismatch request
+  // @ts-expect-error - PrismaAdapter vs AdapterUser type mismatch request
 } = NextAuth(() => {
   return {
     adapter: PrismaAdapter(getPrisma()),
@@ -45,7 +46,7 @@ export const {
 
         // Update token if session is updated (e.g. usage in client update)
         if (trigger === "update" && session?.user) {
-            token.onboardingCompleted = session.user.onboardingCompleted
+          token.onboardingCompleted = session.user.onboardingCompleted
         }
         return token
       },

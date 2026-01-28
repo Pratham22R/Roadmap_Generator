@@ -34,9 +34,10 @@ export default async function DashboardPage() {
   })
 
   // Subscription check
-  const subscription = await getPrisma().subscription.findUnique({
-    where: { userId: session?.user?.id }
+  const subscription = await getPrisma().subscription.findFirst({
+    where: { userId: session?.user.id }
   })
+
 
   // Strict check
   const isPremium = subscription?.status === "PREMIUM" || subscription?.status === "PRO"
