@@ -8,11 +8,10 @@ import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 
 const navItems = [
-  { name: "Product", href: "#product" },
   { name: "Features", href: "#features" },
+  { name: "Preview", href: "#preview" },
+  { name: "Testimonials", href: "#testimonials" },
   { name: "Pricing", href: "#pricing" },
-  { name: "Roadmaps", href: "#roadmaps" },
-  { name: "Contact", href: "#contact" },
 ]
 
 export function Navbar() {
@@ -66,7 +65,7 @@ export function Navbar() {
               Sign in
             </Button>
           </Link>
-          <Link href="/register">
+          <Link href="/login">
             <Button
               className="h-[40px] rounded-[10px] px-5 bg-black text-white font-medium hover:scale-[1.02] hover:bg-black/90 transition-all shadow-md"
             >

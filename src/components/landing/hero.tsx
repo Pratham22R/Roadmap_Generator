@@ -31,7 +31,7 @@ export function Hero() {
 
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto pt-2">
-              <Link href="/register">
+              <Link href="/login">
                 <Button className="h-[52px] px-8 text-[17px] font-medium bg-[#0f172a] text-white hover:bg-black/90 hover:scale-[1.02] transition-all rounded-[12px] w-full sm:w-auto shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)]">
                   Get started free
                 </Button>
