@@ -1,18 +1,51 @@
-export function SocialProof() {
-    return (
-        <div className="mt-24 flex flex-col items-center gap-8 text-center">
-            <p className="text-sm font-semibold text-[#475569] uppercase tracking-wider">Trusted by learners worldwide</p>
+import { TechIcons } from "./technology-grid"
 
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-500">
-                {/* Using text for now as placeholders for logos to match the design style without needing assets immediately */}
-                <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700">Google</div>
-                <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700">GitHub</div>
-                <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700">Notion</div>
-                <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700">Stripe</div>
-                <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700">OpenAI</div>
-                <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700">Vercel</div>
-                <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-500 to-gray-700">Linear</div>
+export function SocialProof() {
+    const technologies = [
+        "React",
+        "TypeScript",
+        "Tailwind",
+        "Prisma",
+        "Inngest",
+        "Google",
+        "Vercel",
+        "Polar"
+    ]
+
+    // Duplicate list for seamless infinite scroll
+    const marqueeList = [...technologies, ...technologies, ...technologies]
+
+    return (
+        <div className="mt-16 flex flex-col items-center gap-8 text-center w-full">
+            <p className="text-sm font-semibold text-[#475569] uppercase tracking-wider">Built with modern technology</p>
+
+            {/* Container: 2/3 width (approx 66%) or max-w-4xl for larger screens */}
+            <div className="relative w-full md:w-2/3 max-w-[900px] overflow-hidden mask-gradient-x">
+                {/* Fade Gradients */}
+                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+                {/* Marquee Track */}
+                <div className="flex animate-marquee hover:[animation-play-state:paused] gap-12 w-max">
+                    {marqueeList.map((tech, index) => (
+                        <div key={`${tech}-${index}`} className="group relative flex flex-col items-center justify-center p-2 opacity-60 hover:opacity-100 transition-all duration-300 hover:scale-110 grayscale hover:grayscale-0">
+                            <div className="h-8 w-8 md:h-10 md:w-10" title={tech}>
+                                {TechIcons[tech]}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
+
+            <style jsx global>{`
+                @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-33.33%); } /* Move 1/3 of the duplicated list */
+                }
+                .animate-marquee {
+                    animation: marquee 30s linear infinite;
+                }
+            `}</style>
         </div>
     )
 }

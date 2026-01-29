@@ -6,7 +6,7 @@ import { SocialProof } from "./social-proof"
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-white pt-[140px] md:pt-[160px] pb-20">
+    <section className="relative overflow-hidden bg-white pt-[140px] md:pt-[160px] pb-8">
       <div className="container mx-auto px-6 max-w-[1200px]">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
 

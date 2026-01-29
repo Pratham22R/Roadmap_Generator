@@ -1,13 +1,16 @@
 import { cn } from "@/lib/utils";
+import { motion, Variants } from "framer-motion";
 
 // SVGs for technology logos
-const TechIcons: Record<string, React.JSX.Element> = {
+export const TechIcons: Record<string, React.JSX.Element> = {
     React: (
         <svg viewBox="-10.5 -9.45 21 18.9" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-[#087ea4]"><circle cx="0" cy="0" r="2" fill="currentColor"></circle><g stroke="currentColor" strokeWidth="1" fill="none"><ellipse rx="10" ry="4.5"></ellipse><ellipse rx="10" ry="4.5" transform="rotate(60)"></ellipse><ellipse rx="10" ry="4.5" transform="rotate(120)"></ellipse></g></svg>
     ),
     Nextjs: (
         <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-black"><mask id="mask0" maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="180"><circle cx="90" cy="90" r="90" fill="black" /></mask><g mask="url(#mask0)"><circle cx="90" cy="90" r="90" fill="black" /><path d="M149.508 157.52L69.142 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.165 149.508 157.52Z" fill="white" /><path d="M115 54H127V125.97H115V54Z" fill="white" /></g></svg>
     ),
+    // ... other icons ...
+
     TypeScript: (
         <svg viewBox="0 0 128 128" className="w-full h-full"><path fill="#007ACC" d="M0 0h128v128H0z" /><path fill="#FFF" d="M71.4 78c-1.6-1.5-2.2-3.6-2.2-6.5v-.5h-15v.8c0 7.8 2 12.3 8.3 14.8 5.6 2.2 24.3 3.6 22 13.9-1.2 5.5-5.9 8.2-12.7 8.2-13.8 0-14.8-10.4-15-12h-15c.3 7 3.5 16.3 14.7 20.3 5.4 1.9 11.2 2 15.6 2 9.4 0 20.6-2.8 23.3-13.4 2.8-10.8-3.4-16.7-10.5-19.1-8.5-2.8-16.4-3.5-17.2-9-1.1-6.8 6.5-7.7 11.2-7.7 5.8 0 10.3 1.2 11.4 9.1h14.8c-1.3-13.3-10-19.4-24.8-19.4-10.8 0-19.3 5.1-23.9 13.7zM24.8 66h15.2v25.3c0 10.6 5.8 16.7 14.7 16.7 15.5 0 13.5-18 13.5-18V66h15.2v25.2c0 10-1 16-6.3 21-6.2 5.7-16 5.7-22.1 5.7-9.5 0-18.4-2.8-23-10-4.5-7-7.2-17.6-7.2-28.5V66z" /></svg>
     ),
@@ -49,6 +52,21 @@ const TechIcons: Record<string, React.JSX.Element> = {
     ),
     Globe: (
         <svg viewBox="0 0 24 24" className="w-full h-full text-blue-500" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg>
+    ),
+    Inngest: (
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-white">
+            <rect width="24" height="24" rx="6" fill="#020817" />
+            <path d="M6 8L12 11L18 8M6 16L12 13L18 16M12 13V20M12 4V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+    ),
+    Google: (
+        <svg viewBox="0 0 24 24" className="w-full h-full" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg>
+    ),
+    AWS: (
+        <svg role="img" viewBox="0 0 24 24" className="w-full h-full text-[#FF9900]" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.793 8.36c-.053-.186-.337-.189-.524-.006l-2.071 2.036c-.198.196-.549.208-.737.02l-2.112-2.112c-.171-.171-.448-.168-.616.006l-2.115 2.19c-.197.203-.431.146-.464-.131l-.226-1.896c-.035-.297-.474-.403-.66-.16l-2.228 2.909c-.156.203.023.498.272.454l1.961-.347c.28-.05.541.096.586.375l.478 2.964c.061.378.601.408.706.039l.995-3.483c.08-.28.487-.272.556.012l1.636 6.755c.084.348.583.336.649-.016l1.328-7.067c.05-.265.426-.289.513-.032l2.674 7.904c.105.31.554.298.647-.018l2.585-8.773c.092-.313-.197-.597-.497-.539l-2.529.493c-.279.054-.515-.176-.448-.445z" /></svg>
+    ),
+    Polar: (
+        <svg viewBox="0 0 24 24" className="w-full h-full text-[#0062FF]" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm4 0h-2v-6h2v6zm0-8h-6V7h6v2z" /></svg> // Simplified placeholder
     )
 };
 
@@ -81,44 +99,91 @@ const gridLayout = [
 ];
 
 export function TechnologyGrid() {
+    // Container orchestrates the staggered entrance
+    const containerVariants: Variants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.05,
+                delayChildren: 0.2
+            }
+        }
+    };
+
+    // Item variants for entrance + continuous floating
+    const itemVariants: Variants = {
+        hidden: {
+            opacity: 0,
+            scale: 0.5,
+            y: 20 // Start slightly below
+        },
+        visible: (custom: number) => ({
+            opacity: 1,
+            scale: 1,
+            y: [0, -6, 0], // Float up and down
+            transition: {
+                opacity: { duration: 0.5, ease: "easeOut" },
+                scale: { type: "spring", stiffness: 260, damping: 20 },
+                y: {
+                    duration: 4 + (custom % 5), // Randomize duration (4-9s)
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: (custom % 3) * 0.5 // Randomize start delay for float
+                }
+            }
+        })
+    };
+
     return (
         <div className="relative flex items-center justify-center p-8 select-none w-full h-full">
             {/* 5x5 Grid Container with radial mask */}
-            <div
+            <motion.div
                 className="grid grid-cols-5 gap-3 md:gap-4 p-4"
                 style={{
                     maskImage: "radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.6) 60%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0) 90%)",
                     WebkitMaskImage: "radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.6) 60%, rgba(0,0,0,0.25) 75%, rgba(0,0,0,0) 90%)"
                 }}
+                variants={containerVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
             >
                 {gridLayout.map((techName, i) => {
                     const isCenter = techName === "CENTER";
-                    // Empty tiles still need to be rendered for the grid, but with different styling
                     const isEmpty = !techName;
-
-                    // Calculate some pseudo-random delays for floating animation based on index
-                    // But only apply float to icons to keep the grid structure grounded or everything float?
-                    // Request said "Optional Enhancements: Very slow floating animation" -> let's apply to tiles.
-                    const animationDelay = `${(i % 5) * 0.5 + Math.floor(i / 5) * 0.3}s`;
 
                     if (isCenter) {
                         return (
-                            <div
+                            <motion.div
                                 key={i}
-                                className="relative z-10 flex h-14 w-14 md:h-[72px] md:w-[72px] items-center justify-center rounded-[20px] bg-black shadow-[0_12px_30px_rgba(0,0,0,0.18)]"
-                                style={{ animation: "float 6s ease-in-out infinite", animationDelay: "0s" }}
+                                custom={i}
+                                variants={itemVariants}
+                                className="relative z-10 flex h-14 w-14 md:h-[72px] md:w-[72px] items-center justify-center rounded-[20px] bg-black shadow-[0_12px_30px_rgba(0,0,0,0.18)] cursor-pointer"
+                                whileHover={{
+                                    scale: 1.1,
+                                    boxShadow: "0px 20px 40px rgba(0,0,0,0.25)",
+                                    transition: { duration: 0.2 }
+                                }}
                             >
                                 <span className="text-white font-bold text-2xl">R</span>
-                            </div>
+                            </motion.div>
                         )
                     }
 
                     if (isEmpty) {
                         return (
-                            <div
+                            <motion.div
                                 key={i}
-                                className="flex h-12 w-12 md:h-16 md:w-16 rounded-[20px] bg-[#f6f7f9] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
-                            // Empty tiles can optionally fade out more or just be static
+                                custom={i}
+                                variants={itemVariants}
+                                className="flex h-12 w-12 md:h-16 md:w-16 rounded-[20px] bg-[#f6f7f9] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] opacity-50"
+                                whileHover={{
+                                    opacity: 1,
+                                    backgroundColor: "#ffffff",
+                                    scale: 1.05,
+                                    transition: { duration: 0.2 }
+                                }}
                             />
                         )
                     }
@@ -126,31 +191,28 @@ export function TechnologyGrid() {
                     const Icon = TechIcons[techName] || TechIcons["Globe"]; // Fallback
 
                     return (
-                        <div
+                        <motion.div
                             key={i}
+                            custom={i}
+                            variants={itemVariants}
                             className={cn(
-                                "flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-[20px] bg-[#f6f7f9] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]"
+                                "group relative flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-[20px] bg-[#f6f7f9] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] cursor-pointer",
+                                "transition-colors duration-300 hover:bg-white" // Keep simple classes for colors
                             )}
-                            style={{
-                                animation: "float 10s ease-in-out infinite",
-                                animationDelay
+                            whileHover={{
+                                scale: 1.15,
+                                zIndex: 20,
+                                boxShadow: "0px 15px 30px rgba(0,0,0,0.15)",
+                                transition: { duration: 0.2 }
                             }}
                         >
-                            <div className="w-6 h-6 md:w-8 md:h-8 opacity-90 transition-opacity hover:opacity-100">
+                            <div className="w-6 h-6 md:w-8 md:h-8 opacity-90 transition-all duration-300 group-hover:opacity-100 group-hover:rotate-3">
                                 {Icon}
                             </div>
-                        </div>
+                        </motion.div>
                     );
                 })}
-            </div>
-
-            <style jsx global>{`
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-          100% { transform: translateY(0px); }
-        }
-      `}</style>
+            </motion.div>
         </div>
     );
 }
