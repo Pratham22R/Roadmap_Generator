@@ -6,11 +6,7 @@ export const TechIcons: Record<string, React.JSX.Element> = {
     React: (
         <svg viewBox="-10.5 -9.45 21 18.9" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-[#087ea4]"><circle cx="0" cy="0" r="2" fill="currentColor"></circle><g stroke="currentColor" strokeWidth="1" fill="none"><ellipse rx="10" ry="4.5"></ellipse><ellipse rx="10" ry="4.5" transform="rotate(60)"></ellipse><ellipse rx="10" ry="4.5" transform="rotate(120)"></ellipse></g></svg>
     ),
-    Nextjs: (
-        <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-black"><mask id="mask0" maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="180"><circle cx="90" cy="90" r="90" fill="black" /></mask><g mask="url(#mask0)"><circle cx="90" cy="90" r="90" fill="black" /><path d="M149.508 157.52L69.142 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.165 149.508 157.52Z" fill="white" /><path d="M115 54H127V125.97H115V54Z" fill="white" /></g></svg>
-    ),
-    // ... other icons ...
-
+    Nextjs: (<svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-black opacity-80"><path d="M149.508 157.52L69.142 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.165 149.508 157.52Z" fill="currentColor" /><path d="M115 54H127V125.97H115V54Z" fill="currentColor" /></svg>),
     TypeScript: (
         <svg viewBox="0 0 128 128" className="w-full h-full"><path fill="#007ACC" d="M0 0h128v128H0z" /><path fill="#FFF" d="M71.4 78c-1.6-1.5-2.2-3.6-2.2-6.5v-.5h-15v.8c0 7.8 2 12.3 8.3 14.8 5.6 2.2 24.3 3.6 22 13.9-1.2 5.5-5.9 8.2-12.7 8.2-13.8 0-14.8-10.4-15-12h-15c.3 7 3.5 16.3 14.7 20.3 5.4 1.9 11.2 2 15.6 2 9.4 0 20.6-2.8 23.3-13.4 2.8-10.8-3.4-16.7-10.5-19.1-8.5-2.8-16.4-3.5-17.2-9-1.1-6.8 6.5-7.7 11.2-7.7 5.8 0 10.3 1.2 11.4 9.1h14.8c-1.3-13.3-10-19.4-24.8-19.4-10.8 0-19.3 5.1-23.9 13.7zM24.8 66h15.2v25.3c0 10.6 5.8 16.7 14.7 16.7 15.5 0 13.5-18 13.5-18V66h15.2v25.2c0 10-1 16-6.3 21-6.2 5.7-16 5.7-22.1 5.7-9.5 0-18.4-2.8-23-10-4.5-7-7.2-17.6-7.2-28.5V66z" /></svg>
     ),
@@ -66,7 +62,22 @@ export const TechIcons: Record<string, React.JSX.Element> = {
         <svg role="img" viewBox="0 0 24 24" className="w-full h-full text-[#FF9900]" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M13.793 8.36c-.053-.186-.337-.189-.524-.006l-2.071 2.036c-.198.196-.549.208-.737.02l-2.112-2.112c-.171-.171-.448-.168-.616.006l-2.115 2.19c-.197.203-.431.146-.464-.131l-.226-1.896c-.035-.297-.474-.403-.66-.16l-2.228 2.909c-.156.203.023.498.272.454l1.961-.347c.28-.05.541.096.586.375l.478 2.964c.061.378.601.408.706.039l.995-3.483c.08-.28.487-.272.556.012l1.636 6.755c.084.348.583.336.649-.016l1.328-7.067c.05-.265.426-.289.513-.032l2.674 7.904c.105.31.554.298.647-.018l2.585-8.773c.092-.313-.197-.597-.497-.539l-2.529.493c-.279.054-.515-.176-.448-.445z" /></svg>
     ),
     Polar: (
-        <svg viewBox="0 0 24 24" className="w-full h-full text-[#0062FF]" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm4 0h-2v-6h2v6zm0-8h-6V7h6v2z" /></svg> // Simplified placeholder
+        <svg
+            viewBox="0 0 256 256"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full text-black opacity-80"
+        >
+            <path
+                d="M128 16C66.1 16 16 66.1 16 128C16 189.9 66.1 240 128 240C189.9 240 240 189.9 240 128C240 66.1 189.9 16 128 16Z"
+                fill="currentColor"
+            />
+            <path
+                d="M160 96C160 78.3 145.7 64 128 64H96V192H120V136H128C145.7 136 160 121.7 160 104V96Z"
+                fill="currentColor"
+            />
+        </svg>
+
     )
 };
 
@@ -93,7 +104,7 @@ const gridLayout = [
     // Row 2
     null, "Prisma", "CENTER", "Github", null,
     // Row 3
-    "Docker", null, "AWS", "Firebase", null,
+    "Docker", null, "Nextjs", "Firebase", null,
     // Row 4
     null, "YouTube", null, "Docs", null
 ];

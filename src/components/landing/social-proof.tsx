@@ -2,6 +2,7 @@ import { TechIcons } from "./technology-grid"
 
 export function SocialProof() {
     const technologies = [
+        "Nextjs",
         "React",
         "TypeScript",
         "Tailwind",
