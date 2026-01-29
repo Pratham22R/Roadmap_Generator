@@ -1,17 +1,17 @@
 'use client'
 
 import { useState, useEffect } from "react"
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ExternalLinkIcon, PlayCircleIcon, Youtube } from "lucide-react"
+import { ExternalLinkIcon, PlayCircleIcon, Youtube, CheckCircle2, Clock, Trophy } from "lucide-react"
 import { toggleSkillStatus } from "@/actions/roadmap"
 import { motion } from "framer-motion"
 
 type RoadmapProps = {
   roadmap: any
+  streak?: number
 }
 
 const container = {
@@ -25,11 +25,11 @@ const container = {
 }
 
 const item = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0 }
 }
 
-export default function RoadmapView({ roadmap }: RoadmapProps) {
+export default function RoadmapView({ roadmap, streak = 0 }: RoadmapProps) {
   // Calculate progress
   const totalSkills = roadmap.phases.reduce((acc: number, phase: any) => acc + phase.skills.length, 0)
   const completedSkills = roadmap.phases.reduce((acc: number, phase: any) =>
@@ -39,135 +39,231 @@ export default function RoadmapView({ roadmap }: RoadmapProps) {
 
   return (
     <div className="space-y-8 pb-20">
-      {/* Compact Bento Header */}
-      <div className="grid md:grid-cols-[1fr_300px] gap-6 mb-8">
+      {/* Premium Header Section - Row 1 */}
+      <div className="grid md:grid-cols-3 gap-6 mb-8">
 
-        {/* Helper Title Card */}
-        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-6 md:p-8 flex flex-col justify-center">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none -mr-16 -mt-16" />
+        {/* Title Card - Takes 2/3 */}
+        <div className="md:col-span-2 relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-center">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-50 to-purple-50 rounded-full blur-3xl opacity-60 pointer-events-none -mr-20 -mt-20" />
 
-          <div className="relative z-10 space-y-3">
+          <div className="relative z-10 space-y-4">
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="border-purple-500/30 bg-purple-500/10 text-purple-300 text-[10px] px-2 py-0.5 uppercase tracking-wider">
-                Active Journey
+              <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700 font-medium px-3 py-1 rounded-full text-xs uppercase tracking-wide">
+                Interactive Roadmap
               </Badge>
             </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight">
-              {roadmap.title}
-            </h1>
-            <p className="text-zinc-400 text-sm leading-relaxed line-clamp-2">
-              {roadmap.description}
-            </p>
+            <div>
+              <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                {roadmap.title}
+              </h1>
+              <p className="text-slate-500 mt-4 text-lg leading-relaxed max-w-2xl">
+                {roadmap.description}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Stats Bento Card */}
-        <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-6 flex flex-col justify-between backdrop-blur-md relative overflow-hidden">
-          <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500" />
+        {/* Progress Card - Takes 1/3 */}
+        <div className="md:col-span-1 rounded-3xl border border-slate-200 bg-white p-5 flex flex-col shadow-sm relative overflow-hidden group">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-50/80 to-transparent pointer-events-none" />
 
-          <div className="space-y-4">
-            <div className="flex justify-between items-end">
-              <div>
-                <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Total Progress</p>
-                <span className="text-3xl font-bold text-white">{progress}%</span>
+          <div className="relative z-10 h-full flex flex-col justify-between">
+            <div className="space-y-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Overall Progress</p>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-5xl font-extrabold text-slate-900 tracking-tight">{progress}%</span>
+                    <span className="text-sm text-slate-500 font-medium">completed</span>
+                  </div>
+                </div>
+                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center text-green-600 shadow-sm border border-green-100">
+                  <Trophy className="h-5 w-5" />
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Status</p>
-                <span className="text-sm font-medium text-green-400 flex items-center justify-end gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> On Track
+
+              <div className="space-y-2">
+                <div className="h-3.5 w-full bg-slate-100/80 rounded-full overflow-hidden border border-slate-100">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 1.2, ease: "circOut" }}
+                    className="h-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 rounded-full shadow-[0_0_10px_rgba(79,70,229,0.4)]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="py-4">
+              {/* Premium Streak Display */}
+              <div className="w-full bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 rounded-2xl p-0.5 shadow-sm">
+                <div className="bg-white/40 backdrop-blur-sm rounded-[14px] p-4 flex items-center justify-between border border-orange-100/50">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Learning Streak</span>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-3xl font-black text-orange-600 tracking-tight">{streak}</span>
+                      <span className="text-xs font-semibold text-orange-400">Days Fire</span>
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-orange-400 blur-xl opacity-20 animate-pulse rounded-full" />
+                    <div className="h-12 w-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-200 text-white relative z-10 rotate-3 transition-transform group-hover:rotate-6">
+                      <span className="text-2xl drop-shadow-md">🔥</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-medium text-slate-400">
+              <div className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-full border border-slate-100">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Self-paced</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded-full border border-emerald-100 shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
+                <span>Active Journey</span>
               </div>
-            </div>
-
-            <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
-                className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
-              />
-            </div>
-
-            <div className="flex justify-between text-xs text-zinc-500 pt-2 border-t border-white/5">
-              <span>{completedSkills} / {totalSkills} Skills</span>
-              <span>{roadmap.phases.length} Phases</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Phases Grid */}
+      {/* Resume Capabilities - Row 2 (Full Width) */}
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-sm mb-12">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-50" />
+        <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-6 relative z-10">
+          <div className="flex-shrink-0 p-4 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
+            <CheckCircle2 className="w-8 h-8" />
+          </div>
+
+          <div className="flex-1 space-y-4">
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                Resume Capabilities
+              </h3>
+              <p className="text-slate-500 text-sm mt-1">
+                Key technologies you will master. Phase completion unlocks the verified badge.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {roadmap.phases.map((phase: any) => {
+                // Check if all skills in this phase are completed
+                const isPhaseCompleted = phase.skills.every((s: any) => s.status === 'COMPLETED')
+
+                return (
+                  <Badge
+                    key={phase.id}
+                    variant="secondary"
+                    className={`px-3 py-1.5 text-sm border transition-all duration-300 cursor-default font-bold
+                                        ${isPhaseCompleted
+                        ? 'bg-green-50 text-green-700 border-green-200 shadow-sm'
+                        : 'bg-slate-50 text-slate-600 border-slate-200 group-hover:border-slate-300'
+                      }`}
+                  >
+                    {isPhaseCompleted && <span className="mr-1.5 text-green-600">✓</span>}
+                    {phase.title}
+                  </Badge>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Phases List */}
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid gap-6"
+        className="space-y-6"
       >
         {roadmap.phases.map((phase: any, index: number) => (
           <motion.div key={phase.id} variants={item}>
-            <Card className="border-white/5 bg-zinc-900/40 backdrop-blur-md hover:bg-zinc-900/60 transition-colors duration-300">
-              <CardHeader className="pb-3 border-b border-white/5">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 font-bold text-sm">
-                      {index + 1}
-                    </div>
-                    <CardTitle className="text-lg font-medium text-zinc-200">
-                      {phase.title}
-                    </CardTitle>
+            <div className="relative pl-0 md:pl-4">
+              {/* Timeline Connector (Desktop Only) */}
+              {index !== roadmap.phases.length - 1 && (
+                <div className="absolute left-[35px] top-14 bottom-[-24px] w-px bg-slate-200 hidden md:block" />
+              )}
+
+              <div className="flex flex-col md:flex-row gap-6">
+                {/* Phase Indicator */}
+                <div className="hidden md:flex flex-col items-center">
+                  <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center text-xl font-bold text-slate-900 z-10">
+                    {index + 1}
                   </div>
-                  <Badge variant="secondary" className="bg-zinc-800 text-zinc-400 hover:bg-zinc-700">
-                    {phase.duration}
-                  </Badge>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <Accordion type="single" collapsible className="w-full space-y-2">
-                  {phase.skills.map((skill: any) => (
-                    <AccordionItem key={skill.id} value={skill.id} className="border border-white/5 rounded-lg bg-black/20 px-3 data-[state=open]:bg-black/40 transition-all duration-200">
-                      <div className="flex items-start gap-3">
-                        {/* Checkbox OUTSIDE trigger */}
-                        <Checkbox
-                          checked={skill.status === "COMPLETED"}
-                          onCheckedChange={async (checked) => {
-                            await toggleSkillStatus(roadmap.id, skill.id, checked as boolean)
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          className="mt-3 border-zinc-600 data-[state=checked]:bg-purple-600 data-[state=checked]:border-purple-600"
-                        />
 
-                        {/* Trigger contains ONLY text */}
-                        <AccordionTrigger className="flex-1 hover:no-underline py-3">
-                          <span
-                            className={`${skill.status === "COMPLETED"
-                              ? "line-through text-zinc-500"
-                              : "text-zinc-300"
-                              } transition-colors`}
-                          >
-                            {skill.title}
-                          </span>
-                        </AccordionTrigger>
+                {/* Phase Content */}
+                <Card className="flex-1 border-slate-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+                  <CardHeader className="border-b border-slate-100 bg-slate-50/50 py-4 px-6">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3 md:hidden">
+                        <span className="text-sm font-bold text-slate-400">#{index + 1}</span>
+                        <CardTitle className="text-lg font-bold text-slate-900">{phase.title}</CardTitle>
                       </div>
-                      <AccordionContent className="pb-4 pt-2 pl-9">
-                        <div className="space-y-4">
-                          <p className="text-zinc-400 text-sm leading-relaxed border-l-2 border-zinc-800 pl-3">
-                            {skill.description}
-                          </p>
+                      <CardTitle className="hidden md:block text-lg font-bold text-slate-900">{phase.title}</CardTitle>
+                      <Badge variant="secondary" className="bg-white text-slate-600 border border-slate-200 shadow-sm text-xs">
+                        {phase.duration}
+                      </Badge>
+                    </div>
+                  </CardHeader>
 
-                          {skill.resources.length > 0 && (
-                            <div className="grid gap-3 pt-2">
-                              {skill.resources.map((resource: any) => (
-                                <ResourceCard key={resource.id} resource={resource} />
-                              ))}
+                  <CardContent className="p-0">
+                    <Accordion type="single" collapsible className="w-full">
+                      {phase.skills.map((skill: any, idx: number) => (
+                        <AccordionItem
+                          key={skill.id}
+                          value={skill.id}
+                          className="border-b border-slate-100 last:border-0 px-6 data-[state=open]:bg-slate-50/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-4 py-4">
+                            <Checkbox
+                              checked={skill.status === "COMPLETED"}
+                              onCheckedChange={async (checked) => {
+                                await toggleSkillStatus(roadmap.id, skill.id, checked as boolean)
+                              }}
+                              className="h-5 w-5 border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 rounded-md transition-all"
+                            />
+
+                            <AccordionTrigger className="flex-1 py-0 hover:no-underline font-medium text-slate-700 hover:text-blue-600 text-left">
+                              <span className={skill.status === "COMPLETED" ? "line-through text-slate-400" : ""}>
+                                {skill.title}
+                              </span>
+                            </AccordionTrigger>
+                          </div>
+
+                          <AccordionContent className="pl-9 pb-6 pt-0">
+                            <div className="space-y-4">
+                              <p className="text-slate-500 text-sm leading-relaxed">
+                                {skill.description}
+                              </p>
+
+                              {skill.resources.length > 0 && (
+                                <div className="grid gap-3 pt-2">
+                                  <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Recommended Resources</h4>
+                                  {skill.resources.map((resource: any) => (
+                                    <ResourceCard key={resource.id} resource={resource} />
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </CardContent>
-            </Card>
+                          </AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </motion.div>
         ))}
       </motion.div>
@@ -176,59 +272,15 @@ export default function RoadmapView({ roadmap }: RoadmapProps) {
 }
 
 function ResourceCard({ resource }: { resource: any }) {
-  // State
-  const [isEmbeddable, setIsEmbeddable] = useState<boolean | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
-  const [thumbnail, setThumbnail] = useState<string | null>(null)
-
   const isYoutube = resource.url.includes("youtube.com") || resource.url.includes("youtu.be")
   const videoId = isYoutube ? getVideoId(resource.url) : null
 
-  useEffect(() => {
-    if (!isYoutube || !videoId) return
-
-    const checkAvailability = async () => {
-      try {
-        // 1. Check if High Res Thumbnail exists (Proxy for video availability/quality)
-        // We use a simple image load check since fetch might be blocked by CORS for images
-        const img = new Image()
-        img.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`
-
-        img.onload = async () => {
-          // Image loaded -> Likely good video
-          setThumbnail(img.src)
-          // 2. Double check with oEmbed for strict embeddability permissions
-          try {
-            const res = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
-            if (res.ok) setIsEmbeddable(true)
-            else setIsEmbeddable(false)
-          } catch {
-            // If oEmbed fails network-wise, we treat image success as "Good enough" for now,
-            // OR we default to false to be super safe. Let's be safe.
-            setIsEmbeddable(false)
-          }
-        }
-
-        img.onerror = () => {
-          // HQ Thumbnail failed -> Likely deleted/private/bad video
-          setIsEmbeddable(false)
-          setThumbnail(`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`) // Fallback for link card
-        }
-
-      } catch (e) {
-        setIsEmbeddable(false)
-      }
-    }
-
-    checkAvailability()
-  }, [isYoutube, videoId])
-
-
-  // 1. Iframe Player (Only if confirmed embeddable)
-  if (isYoutube && isEmbeddable === true && videoId) {
+  // Iframe Player
+  if (isYoutube && videoId) {
     if (isPlaying) {
       return (
-        <div className="rounded-xl overflow-hidden border border-white/5 bg-black/50 aspect-video relative group shadow-lg">
+        <div className="rounded-xl overflow-hidden border border-slate-200 bg-black aspect-video relative shadow-sm w-full md:w-[480px]">
           <iframe
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
             className="w-full h-full"
@@ -239,90 +291,51 @@ function ResourceCard({ resource }: { resource: any }) {
       )
     }
 
-    // Facade (Thumbnail with Play Button)
     return (
       <div
         onClick={() => setIsPlaying(true)}
-        className="rounded-xl overflow-hidden border border-white/5 bg-zinc-900/50 aspect-video relative group shadow-lg cursor-pointer hover:border-white/20 transition-all"
+        className="group relative aspect-video w-full md:w-[480px] cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm transition-all hover:shadow-md"
       >
         <img
-          src={thumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
-          alt={resource.title}
-          className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+          src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+          alt="Video thumbnail"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+          }}
         />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="rounded-full bg-red-600/90 p-4 shadow-xl group-hover:scale-110 transition-transform">
-            <PlayCircleIcon className="h-8 w-8 text-white fill-white" />
+        <div className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+            <PlayCircleIcon className="h-6 w-6 text-slate-900 ml-0.5" />
           </div>
         </div>
-        <div className="absolute bottom-4 left-4 right-4 group-hover:translate-y-0 translate-y-2 opacity-0 group-hover:opacity-100 transition-all">
-          <p className="text-white text-sm font-medium truncate drop-shadow-md">{resource.title}</p>
+
+        <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-medium text-white backdrop-blur-md">
+            <Youtube className="h-3 w-3 text-red-500" />
+            <span>Watch Video</span>
+          </div>
         </div>
       </div>
     )
   }
 
-  // 2. Youtube Fallback Link (If not embeddable or check failed)
-  if (isYoutube && videoId) {
-    // Use efficient HQ thumbnail if oEmbed didn't provide one
-    const thumb = thumbnail || `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-
-    return (
-      <a
-        href={resource.url}
-        target="_blank"
-        rel="noreferrer"
-        className="block group relative overflow-hidden rounded-xl border border-white/5 bg-zinc-900/50 hover:bg-zinc-900 transition-all"
-      >
-        <div className="grid grid-cols-[120px_1fr] gap-4">
-          {/* Thumbnail Section */}
-          <div className="relative h-full min-h-[80px] w-full">
-            <img
-              src={thumb}
-              alt="Video thumbnail"
-              className="absolute inset-0 h-full w-full object-cover text-transparent"
-            />
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="rounded-full bg-black/50 p-1.5 backdrop-blur-sm group-hover:bg-red-600 transition-colors">
-                <PlayCircleIcon className="h-4 w-4 text-white" />
-              </div>
-            </div>
-          </div>
-
-          {/* Content Section */}
-          <div className="py-3 pr-4 flex flex-col justify-center">
-            <div className="flex items-center gap-2 mb-1.5">
-              <Youtube className="h-3.5 w-3.5 text-red-500" />
-              <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-500">
-                Watch on YouTube
-              </span>
-            </div>
-            <h4 className="text-sm font-medium text-zinc-200 line-clamp-2 leading-snug group-hover:text-white transition-colors">
-              {resource.title || "External Video Resource"}
-            </h4>
-          </div>
-        </div>
-      </a>
-    )
-  }
-
-  // 3. Documentation / Other Link
+  // Generic Link
   return (
     <a
       href={resource.url}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center gap-3 p-3 rounded-lg border border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/10 transition-all group"
+      className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-200 hover:bg-blue-50/50 transition-all group hover:shadow-sm"
     >
-      <div className="p-2 rounded-full bg-blue-500/10 text-blue-400 group-hover:scale-110 transition-transform">
+      <div className="p-2 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
         <ExternalLinkIcon className="h-4 w-4" />
       </div>
-      <div className="flex-1">
-        <h4 className="text-sm font-medium text-zinc-200 group-hover:text-blue-300 transition-colors">
+      <div className="flex-1 min-w-0">
+        <h4 className="text-sm font-medium text-slate-700 group-hover:text-blue-700 transition-colors truncate">
           {resource.title || "External Resource"}
         </h4>
-        <p className="text-xs text-zinc-500 truncate opacity-60 group-hover:opacity-100 transition-opacity">{resource.url}</p>
+        <p className="text-xs text-slate-400 truncate group-hover:text-blue-400/80">{resource.url}</p>
       </div>
     </a>
   )

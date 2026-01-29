@@ -1,6 +1,7 @@
 import { getPrisma } from "@/lib/prisma"
 import RoadmapView from "@/components/roadmap/roadmap-view-dynamic"
 import { auth } from "@/auth"
+import { calculateStreak } from "@/lib/metrics"
 import { redirect } from "next/navigation"
 
 interface DetailedRoadmapPageProps {
@@ -12,6 +13,9 @@ interface DetailedRoadmapPageProps {
 export default async function DetailedRoadmapPage({ params }: DetailedRoadmapPageProps) {
     const session = await auth()
     if (!session?.user?.id) return redirect("/login")
+
+    // Fetch user streak for the view
+    const streak = await calculateStreak(session.user.id)
 
 
     const { id } = await params
@@ -82,11 +86,11 @@ export default async function DetailedRoadmapPage({ params }: DetailedRoadmapPag
     return (
         <div className="max-w-5xl mx-auto py-8">
             <div className="mb-6">
-                <a href="/dashboard" className="text-sm text-zinc-400 hover:text-white flex items-center gap-1 transition-colors">
+                <a href="/dashboard" className="text-sm text-slate-500 hover:text-slate-900 flex items-center gap-1 transition-colors">
                     ← Back to Dashboard
                 </a>
             </div>
-            <RoadmapView roadmap={uiRoadmap} />
+            <RoadmapView roadmap={uiRoadmap} streak={streak} />
         </div>
     )
 }

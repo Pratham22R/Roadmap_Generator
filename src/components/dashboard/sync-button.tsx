@@ -33,7 +33,7 @@ export function SyncButton() {
             size="sm"
             onClick={handleSync}
             disabled={loading}
-            className="gap-2 border-zinc-700 bg-zinc-900/50 hover:bg-zinc-800"
+            className="gap-2 bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:text-slate-900 shadow-sm"
         >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             {loading ? "Syncing..." : "Sync Status"}
