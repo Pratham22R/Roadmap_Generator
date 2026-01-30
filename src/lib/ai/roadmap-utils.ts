@@ -6,8 +6,6 @@ export interface RoadmapRequest {
     dailyTime: string
     targetDuration: string
     currentSkills: string[]
-    learningObjective?: string
-    includeProjects?: boolean
 }
 
 interface NormalizedInput {
@@ -16,8 +14,6 @@ interface NormalizedInput {
     dailyTime: string
     targetDuration: string
     currentSkills: string[]
-    learningObjective?: string
-    includeProjects?: boolean
     [key: string]: any
 }
 
@@ -40,8 +36,6 @@ export function normalizeInputs(request: RoadmapRequest): NormalizedInput {
             .map(s => normStr(s))
             .filter(Boolean) // Remove empty strings
             .sort(), // Alphabetical sort for consistency
-        learningObjective: normStr(request.learningObjective),
-        includeProjects: !!request.includeProjects // Force boolean
     };
 }
 
@@ -58,8 +52,6 @@ export function generateTemplateHash(input: NormalizedInput): string {
         'dailyTime',
         'targetDuration',
         'currentSkills', // This is now an array
-        'learningObjective',
-        'includeProjects'
     ];
 
     const dataString = keysToHash.map(key => {

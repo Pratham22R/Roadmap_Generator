@@ -97,9 +97,6 @@ export async function generateRoadmap(
   Daily Learning Time: ${request.dailyTime}
   Target Duration: ${request.targetDuration}
   ${request.currentSkills?.length ? `Existing Skills: ${request.currentSkills.join(", ")}` : ""}
-  ${request.learningObjective ? `Specific Objective: ${request.learningObjective}` : ""}
-  ${request.includeProjects ? `Requirement: MUST include hands-on projects.` : ""}
-  
   ────────────────────────────────────────
   STRUCTURE RULES
   ────────────────────────────────────────

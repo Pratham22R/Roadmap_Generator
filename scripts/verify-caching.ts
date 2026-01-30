@@ -22,6 +22,7 @@ async function main() {
     const input = {
         careerGoal: "Frontend Developer",
         experienceLevel: "Beginner",
+        currentSkills: [],
         dailyTime: "2 hours",
         targetDuration: "3 months"
     }
