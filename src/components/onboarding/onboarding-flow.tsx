@@ -28,7 +28,7 @@ export default function OnboardingFlow({ userId }: { userId?: string }) {
   }
 
   return (
-    <Card className="w-full max-w-lg border-zinc-800 bg-zinc-900/80 backdrop-blur-xl text-zinc-100">
+    <Card className="w-full max-w-lg">
       <CardHeader>
         <CardTitle>Let's personalize your journey</CardTitle>
         <CardDescription>Step {step} of 3</CardDescription>
@@ -37,12 +37,12 @@ export default function OnboardingFlow({ userId }: { userId?: string }) {
         {step === 1 && (
           <div className="space-y-2">
             <Label htmlFor="careerGoal">What is your dream career role?</Label>
-            <Input 
+            <Input
               id="careerGoal"
-              placeholder="e.g. Full Stack Developer, AI Engineer" 
+              placeholder="e.g. Full Stack Developer, AI Engineer"
               value={formData.careerGoal}
-              onChange={(e) => setFormData({...formData, careerGoal: e.target.value})}
-              className="bg-zinc-800 border-zinc-700"
+              onChange={(e) => setFormData({ ...formData, careerGoal: e.target.value })}
+              className="bg-background border-input"
             />
           </div>
         )}
@@ -52,18 +52,17 @@ export default function OnboardingFlow({ userId }: { userId?: string }) {
             <Label>What is your current experience level?</Label>
             <div className="grid grid-cols-1 gap-2">
               {['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].map((level) => (
-                <div 
+                <div
                   key={level}
-                  onClick={() => setFormData({...formData, experienceLevel: level})}
-                  className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                    formData.experienceLevel === level 
-                      ? "border-blue-500 bg-blue-500/10" 
-                      : "border-zinc-700 bg-zinc-800 hover:border-zinc-600"
-                  }`}
+                  onClick={() => setFormData({ ...formData, experienceLevel: level })}
+                  className={`p-4 rounded-lg border cursor-pointer transition-all ${formData.experienceLevel === level
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card hover:bg-muted"
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-medium">{level}</span>
-                    {formData.experienceLevel === level && <CheckIcon className="h-4 w-4 text-blue-500" />}
+                    {formData.experienceLevel === level && <CheckIcon className="h-4 w-4 text-primary" />}
                   </div>
                 </div>
               ))}
@@ -73,13 +72,13 @@ export default function OnboardingFlow({ userId }: { userId?: string }) {
 
         {step === 3 && (
           <div className="space-y-4">
-             <div className="space-y-2">
+            <div className="space-y-2">
               <Label>How much time can you dedicate daily?</Label>
-              <select 
+              <select
                 title="Daily Time"
                 value={formData.dailyTime}
-                onChange={(e) => setFormData({...formData, dailyTime: e.target.value})}
-                className="w-full p-2 h-10 rounded-md border border-zinc-700 bg-zinc-800 text-sm"
+                onChange={(e) => setFormData({ ...formData, dailyTime: e.target.value })}
+                className="w-full p-2 h-10 rounded-md border border-input bg-background text-sm"
               >
                 <option value="30 mins">30 mins</option>
                 <option value="1 hour">1 hour</option>
@@ -87,13 +86,13 @@ export default function OnboardingFlow({ userId }: { userId?: string }) {
                 <option value="4+ hours">4+ hours</option>
               </select>
             </div>
-             <div className="space-y-2">
+            <div className="space-y-2">
               <Label>Target Duration</Label>
-               <select 
+              <select
                 title="Target Duration"
                 value={formData.targetDuration}
-                onChange={(e) => setFormData({...formData, targetDuration: e.target.value})}
-                className="w-full p-2 h-10 rounded-md border border-zinc-700 bg-zinc-800 text-sm"
+                onChange={(e) => setFormData({ ...formData, targetDuration: e.target.value })}
+                className="w-full p-2 h-10 rounded-md border border-input bg-background text-sm"
               >
                 <option value="1 month">1 month</option>
                 <option value="3 months">3 months</option>
