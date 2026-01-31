@@ -4,7 +4,6 @@ import { auth } from "@/auth"
 import { getPrisma } from "@/lib/prisma"
 import { generateRoadmap } from "@/lib/ai/roadmap-generator"
 import { triggerWelcomeEmail } from "@/actions/trigger-welcome-email";
-import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
 const onboardingSchema = z.object({
@@ -17,12 +16,20 @@ const onboardingSchema = z.object({
 
 export async function submitOnboarding(data: z.infer<typeof onboardingSchema>) {
   const session = await auth()
+  const userId = session?.user?.id
 
-  if (!session?.user?.id) {
+  if (!userId) {
     return { success: false, error: "Unauthorized" }
   }
 
   const prisma = getPrisma()
+
+  // Check if user is ALREADY onboarded before we might update it
+  const userStatus = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { onboardingCompleted: true }
+  })
+  const wasAlreadyOnboarded = userStatus?.onboardingCompleted ?? false
 
   // Validate data
   const validatedFields = onboardingSchema.safeParse(data)
@@ -32,13 +39,13 @@ export async function submitOnboarding(data: z.infer<typeof onboardingSchema>) {
 
   // LIMIT CHECK
   const subscription = await prisma.subscription.findUnique({
-    where: { userId: session.user.id }
+    where: { userId }
   })
   const isPremium = subscription?.status === "PREMIUM" || subscription?.status === "PRO"
 
   if (!isPremium) {
     const roadmapCount = await prisma.roadmap.count({
-      where: { userId: session.user.id, status: "ACTIVE" } // Only count active ones
+      where: { userId, status: "ACTIVE" } // Only count active ones
     })
 
     if (roadmapCount >= 1) {
@@ -50,17 +57,17 @@ export async function submitOnboarding(data: z.infer<typeof onboardingSchema>) {
     await prisma.$transaction(async (tx) => {
       // Create Onboarding Profile
       await tx.onboardingProfile.upsert({
-        where: { userId: session.user.id },
+        where: { userId },
         update: { ...validatedFields.data },
         create: {
-          userId: session.user.id,
+          userId,
           ...validatedFields.data
         }
       })
 
       // Mark user as onboarded
       await tx.user.update({
-        where: { id: session.user.id },
+        where: { id: userId },
         data: { onboardingCompleted: true }
       })
     })
@@ -74,7 +81,7 @@ export async function submitOnboarding(data: z.infer<typeof onboardingSchema>) {
     // Since this is a server action, awaiting it here will make the UI submit button spin until it's done.
     // This is good for "instant" feedback.
 
-    await generateRoadmap(session.user.id, {
+    const roadmap = await generateRoadmap(userId, {
       careerGoal: validatedFields.data.careerGoal,
       experienceLevel: validatedFields.data.experienceLevel,
       dailyTime: validatedFields.data.dailyTime,
@@ -82,11 +89,12 @@ export async function submitOnboarding(data: z.infer<typeof onboardingSchema>) {
       currentSkills: validatedFields.data.currentSkills
     })
 
-    if (!session.user.onboardingCompleted) {
+    if (!wasAlreadyOnboarded) {
+      // Pass the user object to avoid another DB call if possible, or just the ID
       await triggerWelcomeEmail(session.user);
     }
 
-    return { success: true }
+    return { success: true, roadmapId: roadmap.id }
   } catch (error) {
     console.error("Onboarding Error:", error)
     return { success: false, error: "Database error" }

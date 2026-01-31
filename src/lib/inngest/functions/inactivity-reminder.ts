@@ -2,6 +2,7 @@ import { inngest } from "../client";
 import { transporter, formatEmail } from "../../email/transporter";
 import { inactivityTemplate } from "../../email/templates/inactivity";
 import { getPrisma } from "@/lib/prisma";
+import { getRenderedEmail } from "../../email/email-renderer";
 
 // 1. Handler
 export const inactivityEmail = inngest.createFunction(
@@ -24,7 +25,10 @@ export const inactivityEmail = inngest.createFunction(
 
         await step.run("send-email", async () => {
             try {
-                const html = inactivityTemplate("");
+                // const html = inactivityTemplate("");
+                const html = await getRenderedEmail("inactivity-reminder", {
+                    dashboardUrl: "https://roadmap.sh/dashboard"
+                }, () => inactivityTemplate(""));
                 await transporter.sendMail(
                     formatEmail({
                         to: email,

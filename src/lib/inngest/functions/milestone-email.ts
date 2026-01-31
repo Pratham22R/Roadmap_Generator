@@ -2,6 +2,7 @@ import { inngest } from "../client";
 import { transporter, formatEmail } from "../../email/transporter";
 import { milestoneTemplate } from "../../email/templates/milestone";
 import { getPrisma } from "@/lib/prisma";
+import { getRenderedEmail } from "../../email/email-renderer";
 
 export const milestoneEmail = inngest.createFunction(
     { id: "milestone-email" },
@@ -33,7 +34,13 @@ export const milestoneEmail = inngest.createFunction(
 
         await step.run("send-email", async () => {
             try {
-                const html = milestoneTemplate("", milestoneType, roadmap.title, roadmapId);
+                // const html = milestoneTemplate("", milestoneType, roadmap.title, roadmapId);
+                const html = await getRenderedEmail("milestone-reached", {
+                    milestoneType: milestoneType,
+                    roadmapTitle: roadmap.title,
+                    roadmapId: roadmapId,
+                    dashboardUrl: "https://roadmap.sh/dashboard"
+                }, () => milestoneTemplate("", milestoneType, roadmap.title, roadmapId));
                 await transporter.sendMail(
                     formatEmail({
                         to: email,

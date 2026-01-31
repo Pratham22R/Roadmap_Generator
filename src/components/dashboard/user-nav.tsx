@@ -18,6 +18,9 @@ import {
 import { signOut } from "next-auth/react"
 
 export function UserNav({ user }: { user: any }) {
+    const role = user?.role || "USER"
+    const isAdmin = role === "ADMIN"
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -31,7 +34,12 @@ export function UserNav({ user }: { user: any }) {
             <DropdownMenuContent className="w-56 bg-white border-slate-200 text-slate-900 shadow-lg p-2" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal px-2 py-2">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-semibold leading-none text-slate-900">{user?.name}</p>
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-semibold leading-none text-slate-900">{user?.name}</p>
+                            <span className="text-[10px] uppercase bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-slate-500 font-medium">
+                                {role}
+                            </span>
+                        </div>
                         <p className="text-xs leading-none text-slate-500 font-medium">
                             {user?.email}
                         </p>
@@ -39,6 +47,11 @@ export function UserNav({ user }: { user: any }) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-slate-100 my-1" />
                 <DropdownMenuGroup>
+                    {isAdmin && (
+                        <DropdownMenuItem asChild className="focus:bg-slate-50 focus:text-slate-900 cursor-pointer rounded-md px-2 py-2 text-slate-600 font-medium transition-colors">
+                            <a href="/admin">Admin Panel</a>
+                        </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem className="focus:bg-slate-50 focus:text-slate-900 cursor-pointer rounded-md px-2 py-2 text-slate-600 font-medium transition-colors">
                         Profile
                     </DropdownMenuItem>

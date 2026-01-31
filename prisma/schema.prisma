@@ -14,6 +14,7 @@ model User {
   emailVerified       DateTime?
   image               String?
   role                UserRole           @default(USER)
+  isBanned            Boolean            @default(false)
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
   onboardingCompleted Boolean            @default(false)
@@ -91,14 +92,10 @@ model Roadmap {
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   template    RoadmapTemplate? @relation(fields: [templateId], references: [id])
   
-  // Legacy phases (kept for backward compatibility)
-  // phases      Phase[] -> REMOVED
-  
   // Progress tracking
   progress    SkillProgress[]
 }
 
-// REMOVED LEGACY MODELS: Phase, Skill, Resource
 
 model ProgressLog {
   id        String   @id @default(cuid())
@@ -129,8 +126,6 @@ model PolarWebhookEvent {
   createdAt DateTime @default(now())
 }
 
-
-// ... existing enums ...
 enum UserRole {
   USER
   ADMIN
@@ -148,8 +143,6 @@ enum SkillStatus {
   IN_PROGRESS
   COMPLETED
 }
-
-// --- NEW MODELS FOR CACHING ---
 
 model RoadmapTemplate {
   id          String   @id @default(cuid())
@@ -196,9 +189,6 @@ model TemplateResource {
   skill     TemplateSkill @relation(fields: [skillId], references: [id], onDelete: Cascade)
 }
 
-
-
-
 model SkillProgress {
   id          String      @id @default(cuid())
   roadmapId   String
@@ -223,4 +213,68 @@ model EmailLog {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@index([userId])
+}
+
+model CareerRole {
+  id          String   @id @default(cuid())
+  title       String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  skills      RoleSkill[]
+}
+
+model RoleSkill {
+  id        String     @id @default(cuid())
+  roleId    String
+  skillId   String
+  category  String?    @default("Core")
+  isDefault Boolean    @default(true)
+  
+  role      CareerRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  skill     Skill      @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, skillId])
+  @@index([roleId])
+  @@index([skillId])
+}
+
+model Skill {
+  id            String      @id @default(cuid())
+  title         String      @unique
+  // Removed roleId, category, isDefault specific to a single role
+  
+  roles         RoleSkill[]
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model GlobalSettings {
+  key         String   @id
+  value       String   @db.Text
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model YouTubeChannel {
+  id        String   @id @default(cuid())
+  channelId String   @unique // The YouTube Channel ID (e.g. UC...)
+  title     String?
+  type      String   @default("WHITELIST") // "WHITELIST" or "BLACKLIST"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., "welcome", "roadmap", "milestone"
+  subject     String?
+  content     String   @db.Text // HTML content with {{placeholders}}
+  description String?
+  isActive    Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 }

@@ -2,6 +2,7 @@ import { inngest } from "../client";
 import { transporter, formatEmail } from "../../email/transporter";
 import { welcomeTemplate } from "../../email/templates/welcome";
 import { getPrisma } from "@/lib/prisma";
+import { getRenderedEmail } from "../../email/email-renderer";
 
 export const welcomeEmail = inngest.createFunction(
     { id: "welcome-email" },
@@ -25,12 +26,16 @@ export const welcomeEmail = inngest.createFunction(
         // 2. Send Email
         const result = await step.run("send-email", async () => {
             try {
-                const html = welcomeTemplate(name || "");
+                const htmlString = await getRenderedEmail("welcome", {
+                    name: name || "",
+                    dashboardUrl: "https://roadmap.sh/dashboard"
+                }, () => welcomeTemplate(name || ""));
+
                 const info = await transporter.sendMail(
                     formatEmail({
                         to: email,
                         subject: "Welcome to Roadmap Generator! 🚀",
-                        html,
+                        html: htmlString,
                     })
                 );
                 return { success: true, messageId: info.messageId };

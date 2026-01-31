@@ -2,6 +2,7 @@ import { inngest } from "../client";
 import { transporter, formatEmail } from "../../email/transporter";
 import { roadmapTemplate } from "../../email/templates/roadmap";
 import { getPrisma } from "@/lib/prisma";
+import { getRenderedEmail } from "../../email/email-renderer";
 
 export const roadmapEmail = inngest.createFunction(
     { id: "roadmap-email" },
@@ -23,7 +24,12 @@ export const roadmapEmail = inngest.createFunction(
 
         await step.run("send-email", async () => {
             try {
-                const html = roadmapTemplate("", roadmapTitle, roadmapId);
+                // const html = roadmapTemplate("", roadmapTitle, roadmapId);
+                const html = await getRenderedEmail("roadmap-generated", {
+                    roadmapTitle: roadmapTitle || "Your Roadmap",
+                    roadmapId: roadmapId,
+                    roadmapUrl: `https://roadmap.sh/roadmap/${roadmapId}`
+                }, () => roadmapTemplate("", roadmapTitle, roadmapId));
                 await transporter.sendMail(
                     formatEmail({
                         to: email,

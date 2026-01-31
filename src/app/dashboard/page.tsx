@@ -10,6 +10,8 @@ import { Plus, ArrowRight, BookOpen, CheckCircle2 } from "lucide-react"
 import { CreateRoadmapCard } from "@/components/dashboard/create-roadmap-card"
 import { StatsOverview } from "@/components/dashboard/stats-overview"
 
+export const dynamic = "force-dynamic"
+
 export default async function DashboardPage() {
   const session = await auth()
   const streak = await calculateStreak(session?.user?.id!)

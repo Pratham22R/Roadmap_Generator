@@ -1,8 +1,7 @@
 import { getPrisma } from "@/lib/prisma"
 import { GoogleGenAI } from "@google/genai"
 import { google } from "googleapis"
-import { sendEmail } from "@/lib/email"
-import { EmailTemplates } from "@/lib/email-templates"
+import { inngest } from "@/lib/inngest/client"
 import { normalizeInputs, generateTemplateHash, type RoadmapRequest } from "./roadmap-utils"
 import { z } from "zod"
 
@@ -84,19 +83,30 @@ export async function generateRoadmap(
   /* -------------------- 3. GENERATION (CACHE MISS) -------------------- */
   console.log("⚠️ CACHE MISS: Calling Gemini...")
 
-  const prompt = `
-  You are a senior industry mentor and curriculum architect.
+  /* -------------------- 3. GENERATION (CACHE MISS) -------------------- */
+  console.log("⚠️ CACHE MISS: Calling Gemini...")
+
+  // Fetch dynamic system prompt
+  const systemPromptSetting = await prisma.globalSettings.findUnique({
+    where: { key: "roadmap_system_prompt" }
+  })
+
+  let basePrompt = systemPromptSetting?.value || ""
+
+  // Fallback if DB is empty for some reason
+  if (!basePrompt) {
+    basePrompt = `You are a senior industry mentor and curriculum architect.
   
   Your task is to design a COMPLETE, highly detailed, job-ready learning roadmap.
   
   ────────────────────────────────────────
   USER PROFILE
   ────────────────────────────────────────
-  Career Goal: ${request.careerGoal}
-  Experience Level: ${request.experienceLevel}
-  Daily Learning Time: ${request.dailyTime}
-  Target Duration: ${request.targetDuration}
-  ${request.currentSkills?.length ? `Existing Skills: ${request.currentSkills.join(", ")}` : ""}
+  Career Goal: {{careerGoal}}
+  Experience Level: {{experienceLevel}}
+  Daily Learning Time: {{dailyTime}}
+  Target Duration: {{targetDuration}}
+  {{currentSkills}}
   ────────────────────────────────────────
   STRUCTURE RULES
   ────────────────────────────────────────
@@ -158,8 +168,16 @@ export async function generateRoadmap(
     }[];
   }
   
-  NO Markdown. NO Explanations. Just the JSON object.
-  `
+  NO Markdown. NO Explanations. Just the JSON object.`
+  }
+
+  // Inject variables
+  const prompt = basePrompt
+    .replace("{{careerGoal}}", request.careerGoal)
+    .replace("{{experienceLevel}}", request.experienceLevel)
+    .replace("{{dailyTime}}", request.dailyTime)
+    .replace("{{targetDuration}}", request.targetDuration)
+    .replace("{{currentSkills}}", request.currentSkills?.length ? `Existing Skills: ${request.currentSkills.join(", ")}` : "")
 
   const result = await genAI.models.generateContent({
     model: "gemini-2.5-flash",
@@ -356,12 +374,12 @@ async function createRoadmapFromTemplate(
   }
 
   // 3. Async Email (Fire and forget)
-  sendNotificationEmail(userId, title).catch(console.error)
+  triggerRoadmapEmail(userId, title, roadmap.id).catch(console.error)
 
   return roadmap
 }
 
-async function sendNotificationEmail(userId: string, roadmapTitle: string) {
+async function triggerRoadmapEmail(userId: string, roadmapTitle: string, roadmapId: string) {
   const prisma = getPrisma()
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -369,13 +387,14 @@ async function sendNotificationEmail(userId: string, roadmapTitle: string) {
   })
 
   if (user?.email) {
-    await sendEmail({
-      to: user.email,
-      subject: `Your roadmap "${roadmapTitle}" is ready 🚀`,
-      html: EmailTemplates.roadmapCreated(
+    await inngest.send({
+      name: "roadmap/generated",
+      data: {
+        userId,
+        email: user.email,
         roadmapTitle,
-        `${process.env.NEXTAUTH_URL}/dashboard`
-      ),
+        roadmapId
+      }
     })
   }
 }

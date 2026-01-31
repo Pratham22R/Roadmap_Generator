@@ -1,20 +1,20 @@
 
 interface EmailLayoutProps {
-    previewText: string;
-    heading: string;
-    content: string;
-    actionText?: string;
-    actionUrl?: string;
-    accentColor?: string; // Hex code, defaults to primary blue/purple
+  previewText: string;
+  heading: string;
+  content: string;
+  actionText?: string;
+  actionUrl?: string;
+  accentColor?: string; // Hex code, defaults to primary blue/purple
 }
 
 export const emailLayout = ({
-    previewText,
-    heading,
-    content,
-    actionText,
-    actionUrl,
-    accentColor = "#2563eb",
+  previewText,
+  heading,
+  content,
+  actionText,
+  actionUrl,
+  accentColor = "#d0d0d0ff",
 }: EmailLayoutProps) => `
 <!DOCTYPE html>
 <html lang="en">
@@ -92,5 +92,5 @@ export const emailLayout = ({
 
 // Simple color helper to darken hex for gradient
 function adjustColor(color: string, amount: number) {
-    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+  return '#' + color.replace(/^#/, '').replace(/../g, color => ('0' + Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
 }
