@@ -35,6 +35,6 @@ export const roadmapTemplate = async (name: string, roadmapTitle: string, roadma
     content: filledContent,
     actionText: "View Roadmap",
     actionUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/roadmap/${roadmapId}`,
-    accentColor: "#d0d0d0ff", // Indigo
+    accentColor: "#6366f1", // Indigo
   });
 };

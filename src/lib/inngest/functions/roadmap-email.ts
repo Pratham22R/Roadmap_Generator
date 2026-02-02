@@ -28,7 +28,7 @@ export const roadmapEmail = inngest.createFunction(
                 const html = await getRenderedEmail("roadmap-generated", {
                     roadmapTitle: roadmapTitle || "Your Roadmap",
                     roadmapId: roadmapId,
-                    roadmapUrl: `https://roadmap.sh/roadmap/${roadmapId}`
+                    roadmapUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/roadmap/${roadmapId}`
                 }, () => roadmapTemplate("", roadmapTitle, roadmapId));
                 await transporter.sendMail(
                     formatEmail({

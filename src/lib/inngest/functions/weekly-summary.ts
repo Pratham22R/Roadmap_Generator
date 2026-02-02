@@ -14,14 +14,122 @@ export const weeklySummaryEmail = inngest.createFunction(
 
         // Fetch stats for the period
         const stats = await step.run("fetch-stats", async () => {
-            // Mock stats for now or real query
-            // Real query: Count 'COMPLETED' ProgressLogs or SkillProgress between dates
-            // For demo:
+            const startDate = new Date(periodStart);
+            const endDate = new Date(periodEnd);
+
+            // 1. Completed Tasks
+            const completedTasks = await prisma.progressLog.count({
+                where: {
+                    userId,
+                    itemType: "SKILL",
+                    action: "COMPLETED",
+                    timestamp: {
+                        gte: startDate,
+                        lte: endDate
+                    }
+                }
+            });
+
+            // 2. Total Hours
+            const successfulLogs = await prisma.progressLog.findMany({
+                where: {
+                    userId,
+                    itemType: "SKILL",
+                    action: "COMPLETED",
+                    timestamp: {
+                        gte: startDate,
+                        lte: endDate
+                    }
+                },
+                select: { itemId: true }
+            });
+
+            const skillIds = successfulLogs.map(log => log.itemId);
+            const skills = await prisma.templateSkill.findMany({
+                where: { id: { in: skillIds } },
+                select: { estimatedTime: true }
+            });
+
+            // Helper needed here or imported. Assuming imported from utils.
+            // We need to update imports first, but I can't do two edits in one tool call easily if they are far apart.
+            // I'll assume parseEstimatedHours is available or I'll inline a simple version if import is hard.
+            // Better to rely on the import I will add in the next step or same step if I can partial edit.
+            // Since I am replacing the block, I can't add imports at the top easily without replacing the whole file or using multi_replace.
+            // I'll calculate hours here with logic or assume import.
+            // Let's use the exported function from utils.
+
+            const { parseEstimatedHours } = await import("@/lib/utils");
+
+            let totalHours = 0;
+            skills.forEach(skill => {
+                totalHours += parseEstimatedHours(skill.estimatedTime);
+            });
+
+            // Round to 1 decimal place
+            totalHours = Math.round(totalHours * 10) / 10;
+
+            // 3. Current Streak
+            // Get all unique dates of activity
+            const logs = await prisma.progressLog.findMany({
+                where: { userId },
+                select: { timestamp: true },
+                orderBy: { timestamp: 'desc' }
+            });
+
+            const uniqueDates = new Set(logs.map(l => l.timestamp.toISOString().split('T')[0]));
+            const sortedDates = Array.from(uniqueDates).sort().reverse();
+
+            let currentStreak = 0;
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+            // Check if streak is active (activity today or yesterday)
+            if (uniqueDates.has(today) || uniqueDates.has(yesterday)) {
+                let checkDate = new Date();
+                // If no activity today, start checking from yesterday
+                if (!uniqueDates.has(today)) {
+                    checkDate.setDate(checkDate.getDate() - 1);
+                }
+
+                while (true) {
+                    const dateStr = checkDate.toISOString().split('T')[0];
+                    if (uniqueDates.has(dateStr)) {
+                        currentStreak++;
+                        checkDate.setDate(checkDate.getDate() - 1);
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            // 4. Next Goal
+            const activeRoadmap = await prisma.roadmap.findFirst({
+                where: { userId, status: "ACTIVE" },
+                orderBy: { updatedAt: 'desc' }
+            });
+
+            let nextGoal = "Start a new roadmap!";
+            if (activeRoadmap) {
+                const pendingSkill = await prisma.skillProgress.findFirst({
+                    where: {
+                        roadmapId: activeRoadmap.id,
+                        status: "PENDING"
+                    },
+                    include: { skill: true }
+                });
+
+                if (pendingSkill) {
+                    nextGoal = `Master ${pendingSkill.skill.title}`;
+                } else {
+                    nextGoal = "All caught up!";
+                }
+            }
+
             return {
-                completedTasks: 5,
-                totalHours: 12,
-                currentStreak: 3,
-                nextGoal: "Master Next.js"
+                completedTasks,
+                totalHours,
+                currentStreak,
+                nextGoal
             };
         });
 

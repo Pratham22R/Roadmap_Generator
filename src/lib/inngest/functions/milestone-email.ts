@@ -39,7 +39,7 @@ export const milestoneEmail = inngest.createFunction(
                     milestoneType: milestoneType,
                     roadmapTitle: roadmap.title,
                     roadmapId: roadmapId,
-                    dashboardUrl: "https://roadmap.sh/dashboard"
+                    dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
                 }, () => milestoneTemplate("", milestoneType, roadmap.title, roadmapId));
                 await transporter.sendMail(
                     formatEmail({

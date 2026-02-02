@@ -41,7 +41,7 @@ export const emailLayout = ({
     
     /* Button */
     .cta-container { text-align: center; margin: 30px 0; }
-    .button { display: inline-block; padding: 14px 32px; background-color: ${accentColor}; color: #ffffff; font-weight: 600; border-radius: 50px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
+    .button { display: inline-block; padding: 14px 32px; background-color: ${accentColor}; color: #ffffff !important; font-weight: 600; border-radius: 50px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
     
     /* Footer */
     .footer { padding: 20px; text-align: center; background-color: #f9fafb; border-top: 1px solid #e5e7eb; font-size: 14px; color: #9ca3af; }

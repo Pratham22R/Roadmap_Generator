@@ -27,7 +27,7 @@ export const inactivityEmail = inngest.createFunction(
             try {
                 // const html = inactivityTemplate("");
                 const html = await getRenderedEmail("inactivity-reminder", {
-                    dashboardUrl: "https://roadmap.sh/dashboard"
+                    dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
                 }, () => inactivityTemplate(""));
                 await transporter.sendMail(
                     formatEmail({

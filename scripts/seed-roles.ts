@@ -3,32 +3,34 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 const careerRoleSkills = {
-    fullStackWebDeveloper: {
-        title: "Full Stack Web Developer",
+    frontendDeveloper: {
+        title: "Frontend Developer",
         description:
-            "Develops complete web applications including frontend, backend, database, and deployment.",
+            "Builds interactive, responsive, and user-friendly web interfaces focusing on performance and user experience.",
         skillFlow: [
             {
                 phase: "Web Fundamentals",
                 skills: [
                     "HTML",
+                    "Semantic HTML",
                     "CSS",
                     "Responsive Design",
                     "Web Accessibility",
-                    "Browser & Internet Basics"
+                    "Browser Rendering Basics"
                 ]
             },
             {
-                phase: "Programming Fundamentals",
+                phase: "Core JavaScript",
                 skills: [
                     "JavaScript",
                     "ES6+ Features",
+                    "DOM Manipulation",
                     "Asynchronous JavaScript",
-                    "DOM Manipulation"
+                    "Event Handling"
                 ]
             },
             {
-                phase: "Frontend Frameworks",
+                phase: "Frontend Framework",
                 skills: [
                     "React",
                     "Component Architecture",
@@ -38,29 +40,98 @@ const careerRoleSkills = {
                 ]
             },
             {
-                phase: "UI & Styling Tools",
+                phase: "Styling & UI Systems",
                 skills: [
                     "Tailwind CSS",
+                    "CSS Modules",
                     "Radix UI",
                     "Shadcn UI",
-                    "CSS Animations"
+                    "Framer Motion"
                 ]
             },
             {
-                phase: "State Management",
+                phase: "State & Data Management",
                 skills: [
                     "React Context API",
                     "Zustand",
-                    "Redux Toolkit"
+                    "Redux Toolkit",
+                    "Server State Management"
                 ]
             },
             {
                 phase: "Type Safety",
                 skills: [
                     "TypeScript",
+                    "Typing React Components",
                     "Generics",
-                    "Type Inference",
-                    "Frontend Typing Patterns"
+                    "Advanced Type Patterns"
+                ]
+            },
+            {
+                phase: "Modern Frontend Tools",
+                skills: [
+                    "Vite",
+                    "Next.js",
+                    "Server Components",
+                    "API Routes",
+                    "SEO Optimization"
+                ]
+            },
+            {
+                phase: "Testing & Optimization",
+                skills: [
+                    "Jest",
+                    "React Testing Library",
+                    "Performance Optimization",
+                    "Code Splitting",
+                    "Lazy Loading"
+                ]
+            },
+            {
+                phase: "Version Control & Deployment",
+                skills: [
+                    "Git",
+                    "GitHub",
+                    "Environment Variables",
+                    "Deployment (Vercel, Netlify)",
+                    "CI/CD Basics"
+                ]
+            }
+        ]
+    },
+
+    backendDeveloper: {
+        title: "Backend Developer",
+        description:
+            "Designs and develops scalable server-side systems, APIs, databases, and application logic.",
+        skillFlow: [
+            {
+                phase: "Programming Foundations",
+                skills: [
+                    "JavaScript",
+                    "TypeScript",
+                    "Node.js Fundamentals",
+                    "Asynchronous Programming"
+                ]
+            },
+            {
+                phase: "Backend Core Concepts",
+                skills: [
+                    "Node.js Runtime",
+                    "Event Loop",
+                    "File System",
+                    "Streams",
+                    "Process Management"
+                ]
+            },
+            {
+                phase: "API Development",
+                skills: [
+                    "REST APIs",
+                    "Express.js",
+                    "Request Validation",
+                    "Error Handling",
+                    "API Documentation"
                 ]
             },
             {
@@ -69,143 +140,68 @@ const careerRoleSkills = {
                     "SQL Fundamentals",
                     "PostgreSQL",
                     "MongoDB",
-                    "Database Design",
-                    "Indexes & Relations"
+                    "Indexes",
+                    "Database Design"
                 ]
             },
             {
                 phase: "ORM & Data Layer",
                 skills: [
-                    "Drizzle ORM",
                     "Prisma ORM",
-                    "Schema Design",
-                    "Migrations"
+                    "Drizzle ORM",
+                    "Migrations",
+                    "Transactions",
+                    "Query Optimization"
                 ]
             },
             {
-                phase: "Backend Development",
+                phase: "Authentication & Security",
                 skills: [
-                    "Node.js",
-                    "Express.js",
-                    "REST APIs",
-                    "Authentication",
-                    "Authorization"
+                    "JWT",
+                    "OAuth 2.0",
+                    "Session Management",
+                    "Role-Based Access Control",
+                    "Security Best Practices"
                 ]
             },
             {
-                phase: "Dev Tools & Deployment",
+                phase: "Advanced Backend",
                 skills: [
-                    "Git",
-                    "GitHub",
-                    "Environment Variables",
-                    "Docker Basics",
-                    "Deployment (Vercel, Railway, Render)",
-                    "CI/CD Basics"
+                    "Caching (Redis)",
+                    "Message Queues",
+                    "Background Jobs",
+                    "WebSockets"
+                ]
+            },
+            {
+                phase: "System Design",
+                skills: [
+                    "Scalability",
+                    "Load Balancing",
+                    "Rate Limiting",
+                    "Microservices Basics"
+                ]
+            },
+            {
+                phase: "DevOps & Deployment",
+                skills: [
+                    "Docker",
+                    "Environment Configuration",
+                    "Logging",
+                    "Monitoring",
+                    "Deployment (Railway, Render, AWS)"
                 ]
             }
         ]
     },
 
-    dataScientist: {
-        title: "Data Scientist",
+    aiEngineer: {
+        title: "AI Engineer",
         description:
-            "Analyzes data to extract insights using statistics, machine learning, and visualization.",
+            "Builds AI-powered applications using machine learning models, deep learning, and large language models.",
         skillFlow: [
             {
                 phase: "Programming Foundations",
-                skills: [
-                    "Python",
-                    "Jupyter Notebook",
-                    "Python Data Types",
-                    "Functions",
-                    "OOP Basics"
-                ]
-            },
-            {
-                phase: "Mathematics & Statistics",
-                skills: [
-                    "Statistics",
-                    "Probability",
-                    "Linear Algebra",
-                    "Descriptive Analysis",
-                    "Hypothesis Testing"
-                ]
-            },
-            {
-                phase: "Data Analysis",
-                skills: [
-                    "NumPy",
-                    "Pandas",
-                    "Data Cleaning",
-                    "Data Wrangling"
-                ]
-            },
-            {
-                phase: "Data Visualization",
-                skills: [
-                    "Matplotlib",
-                    "Seaborn",
-                    "Plotly",
-                    "Dashboard Concepts"
-                ]
-            },
-            {
-                phase: "Databases & SQL",
-                skills: [
-                    "SQL",
-                    "PostgreSQL",
-                    "Joins",
-                    "Indexes",
-                    "Data Modeling"
-                ]
-            },
-            {
-                phase: "Machine Learning",
-                skills: [
-                    "Scikit-learn",
-                    "Regression",
-                    "Classification",
-                    "Clustering",
-                    "Model Evaluation"
-                ]
-            },
-            {
-                phase: "Advanced ML",
-                skills: [
-                    "Feature Engineering",
-                    "Model Optimization",
-                    "Pipelines",
-                    "Hyperparameter Tuning"
-                ]
-            },
-            {
-                phase: "Big Data & Tools",
-                skills: [
-                    "Apache Spark",
-                    "Hadoop Basics",
-                    "Data Warehousing"
-                ]
-            },
-            {
-                phase: "Deployment & MLOps",
-                skills: [
-                    "Model Deployment",
-                    "FastAPI",
-                    "Docker",
-                    "MLflow",
-                    "Monitoring"
-                ]
-            }
-        ]
-    },
-
-    aiMachineLearningEngineer: {
-        title: "AI / Machine Learning Engineer",
-        description:
-            "Builds intelligent systems using deep learning, neural networks, and production AI pipelines.",
-        skillFlow: [
-            {
-                phase: "Programming Core",
                 skills: [
                     "Python",
                     "OOP",
@@ -214,29 +210,30 @@ const careerRoleSkills = {
                 ]
             },
             {
-                phase: "Math for AI",
+                phase: "Mathematics for AI",
                 skills: [
                     "Linear Algebra",
                     "Probability",
                     "Statistics",
-                    "Optimization"
+                    "Optimization Techniques"
                 ]
             },
             {
-                phase: "Data Processing",
+                phase: "Data Handling",
                 skills: [
                     "NumPy",
                     "Pandas",
-                    "Data Preprocessing"
+                    "Data Cleaning",
+                    "Feature Engineering"
                 ]
             },
             {
-                phase: "Machine Learning",
+                phase: "Machine Learning Core",
                 skills: [
                     "Supervised Learning",
                     "Unsupervised Learning",
                     "Scikit-learn",
-                    "Evaluation Metrics"
+                    "Model Evaluation"
                 ]
             },
             {
@@ -255,31 +252,41 @@ const careerRoleSkills = {
                 skills: [
                     "Tokenization",
                     "Embeddings",
-                    "LLMs",
-                    "Prompt Engineering"
+                    "Text Classification",
+                    "Large Language Models"
                 ]
             },
             {
-                phase: "Computer Vision",
+                phase: "Generative AI",
                 skills: [
-                    "OpenCV",
-                    "Image Classification",
-                    "Object Detection"
+                    "Prompt Engineering",
+                    "RAG Pipelines",
+                    "Vector Databases",
+                    "LangChain",
+                    "Embeddings Optimization"
                 ]
             },
             {
-                phase: "MLOps & Deployment",
+                phase: "AI Deployment",
                 skills: [
                     "FastAPI",
-                    "Docker",
-                    "Kubernetes Basics",
                     "Model Serving",
-                    "Monitoring"
+                    "Docker",
+                    "Inference Optimization"
+                ]
+            },
+            {
+                phase: "MLOps",
+                skills: [
+                    "MLflow",
+                    "Model Monitoring",
+                    "Experiment Tracking",
+                    "CI/CD for ML"
                 ]
             }
         ]
     }
-}
+};
 
 async function main() {
     console.log("🌱 Seeding Career Roles from updated design...")

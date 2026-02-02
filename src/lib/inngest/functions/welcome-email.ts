@@ -28,7 +28,7 @@ export const welcomeEmail = inngest.createFunction(
             try {
                 const htmlString = await getRenderedEmail("welcome", {
                     name: name || "",
-                    dashboardUrl: "https://roadmap.sh/dashboard"
+                    dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`
                 }, () => welcomeTemplate(name || ""));
 
                 const info = await transporter.sendMail(

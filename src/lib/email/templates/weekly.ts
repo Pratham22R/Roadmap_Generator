@@ -10,16 +10,18 @@ export const WEEKLY_TEMPLATE_DEFAULT = `
       <h2 style="margin: 0; font-size: 36px; color: #16a34a;">{{completedTasks}}</h2>
       <p style="margin: 5px 0 0; color: #6b7280; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">Skills Completed</p>
       
-      <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around;">
-        <div>
-           <div style="font-size: 24px; font-weight: bold; color: #1f2937;">{{totalHours}}</div>
-           <div style="color: #6b7280; font-size: 12px; text-transform: uppercase;">Hours</div>
-        </div>
-        <div>
-           <div style="font-size: 24px; font-weight: bold; color: #f59e0b;">{{currentStreak}} 🔥</div>
-           <div style="color: #6b7280; font-size: 12px; text-transform: uppercase;">Day Streak</div>
-        </div>
-      </div>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+        <tr>
+          <td align="center" width="50%" style="vertical-align: top; padding: 0 10px;">
+             <div style="font-size: 24px; font-weight: bold; color: #1f2937;">{{totalHours}}</div>
+             <div style="color: #6b7280; font-size: 12px; text-transform: uppercase;">Hours</div>
+          </td>
+          <td align="center" width="50%" style="vertical-align: top; padding: 0 10px;">
+             <div style="font-size: 24px; font-weight: bold; color: #f59e0b;">{{currentStreak}} 🔥</div>
+             <div style="color: #6b7280; font-size: 12px; text-transform: uppercase;">Day Streak</div>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <p style="text-align: center;">Your next goal: <strong style="color: #111827;">{{nextGoal}}</strong></p>
