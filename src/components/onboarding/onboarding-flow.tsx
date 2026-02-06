@@ -26,14 +26,17 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
   const totalSteps = 3
 
   const handleNext = () => {
+    if (isSubmitting) return
     if (step < totalSteps) setStep(step + 1)
   }
 
   const handleBack = () => {
+    if (isSubmitting) return
     if (step > 1) setStep(step - 1)
   }
 
   const handleSubmit = async () => {
+    if (isSubmitting) return
     setIsSubmitting(true)
     try {
       const result = await submitOnboarding({
@@ -95,21 +98,24 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
     onClick,
     title,
     subtitle,
-    icon: Icon
+    icon: Icon,
+    disabled
   }: {
     active: boolean,
     onClick: () => void,
     title: string,
     subtitle?: string,
-    icon?: any
+    icon?: any,
+    disabled?: boolean
   }) => (
     <div
-      onClick={onClick}
+      onClick={!disabled ? onClick : undefined}
       className={cn(
-        "relative group flex items-start gap-4 p-5 rounded-2xl cursor-pointer transition-all duration-300 border-2",
+        "relative group flex items-start gap-4 p-5 rounded-2xl transition-all duration-300 border-2",
+        disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "cursor-pointer",
         active
           ? "border-primary bg-primary/5 shadow-md"
-          : "border-transparent bg-secondary/40 hover:bg-secondary/70 hover:scale-[1.01]"
+          : !disabled && "border-transparent bg-secondary/40 hover:bg-secondary/70 hover:scale-[1.01]"
       )}
     >
       <div className={cn(
@@ -142,14 +148,16 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
     </div>
   )
 
-  const PillOption = ({ active, onClick, label }: { active: boolean, onClick: () => void, label: string }) => (
+  const PillOption = ({ active, onClick, label, disabled }: { active: boolean, onClick: () => void, label: string, disabled?: boolean }) => (
     <button
-      onClick={onClick}
+      onClick={!disabled ? onClick : undefined}
+      disabled={disabled}
       className={cn(
         "px-6 py-3 rounded-full text-sm font-semibold transition-all duration-200 border-2",
+        disabled ? "opacity-50 cursor-not-allowed pointer-events-none" : "",
         active
           ? "border-primary bg-primary text-primary-foreground shadow-md transform scale-105"
-          : "border-transparent bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground"
+          : !disabled && "border-transparent bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground"
       )}
     >
       {label}
@@ -163,7 +171,13 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
 
       {/* Header Controls */}
       <div className="fixed top-6 right-6 z-50">
-        <Link href="/dashboard" className="p-3 bg-background/80 backdrop-blur-md rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border shadow-sm block">
+        <Link
+          href={isSubmitting ? "#" : "/dashboard"}
+          className={cn(
+            "p-3 bg-background/80 backdrop-blur-md rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border shadow-sm block",
+            isSubmitting && "opacity-50 pointer-events-none cursor-not-allowed"
+          )}
+        >
           <X className="h-5 w-5" />
         </Link>
       </div>
@@ -205,6 +219,7 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
                         title={role.label}
                         subtitle="Career Path"
                         icon={Briefcase}
+                        disabled={isSubmitting}
                       />
                     </motion.div>
                   ))}
@@ -216,9 +231,11 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
                         <Search className="h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
                       </div>
                       <Input
+                        disabled={isSubmitting}
                         placeholder="Or type a specific role (e.g. 'DevOps Engineer')"
                         className={cn(
                           "pl-12 h-16 text-lg rounded-2xl border-2 transition-all shadow-sm bg-secondary/20",
+                          isSubmitting && "opacity-50 cursor-not-allowed",
                           customRole || (formData.careerGoal && !careerRoles.find(r => r.value === formData.careerGoal))
                             ? "border-primary ring-offset-0 focus-visible:ring-0 bg-primary/5"
                             : "border-transparent hover:bg-secondary/40 focus-visible:border-primary focus-visible:ring-0"
@@ -264,6 +281,7 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
                     title="Beginner"
                     subtitle="I'm just starting out. I need fundamentals."
                     icon={Zap}
+                    disabled={isSubmitting}
                   />
                   <SelectionCard
                     active={formData.experienceLevel === 'INTERMEDIATE'}
@@ -271,6 +289,7 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
                     title="Intermediate"
                     subtitle="I have built projects. Show me advanced concepts."
                     icon={Zap}
+                    disabled={isSubmitting}
                   />
                   <SelectionCard
                     active={formData.experienceLevel === 'ADVANCED'}
@@ -278,6 +297,7 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
                     title="Advanced"
                     subtitle="I want mastery, architecture, and best practices."
                     icon={Zap}
+                    disabled={isSubmitting}
                   />
                 </div>
               </motion.div>
@@ -315,6 +335,7 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
                           label={time}
                           active={formData.dailyTime === time}
                           onClick={() => setFormData({ ...formData, dailyTime: time })}
+                          disabled={isSubmitting}
                         />
                       ))}
                     </div>
@@ -334,6 +355,7 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
                           label={dur}
                           active={formData.targetDuration === dur}
                           onClick={() => setFormData({ ...formData, targetDuration: dur })}
+                          disabled={isSubmitting}
                         />
                       ))}
                     </div>
@@ -359,9 +381,11 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
             variant="ghost"
             size="lg"
             onClick={handleBack}
+            disabled={isSubmitting}
             className={cn(
               "text-muted-foreground hover:text-foreground transition-all rounded-full px-6",
-              step === 1 ? "opacity-0 pointer-events-none" : "opacity-100"
+              step === 1 ? "opacity-0 pointer-events-none" : "opacity-100",
+              isSubmitting && "opacity-50 cursor-not-allowed"
             )}
           >
             <ChevronLeft className="mr-2 h-5 w-5" /> Back
@@ -373,9 +397,13 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
               onClick={handleNext}
               disabled={
                 (step === 1 && !formData.careerGoal) ||
-                (step === 2 && !formData.experienceLevel)
+                (step === 2 && !formData.experienceLevel) ||
+                isSubmitting
               }
-              className="rounded-full px-8 py-6 text-lg shadow-lg hover:shadow-primary/25 transition-all hover:scale-105"
+              className={cn(
+                "rounded-full px-8 py-6 text-lg shadow-lg hover:shadow-primary/25 transition-all hover:scale-105",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
             >
               Continue <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
