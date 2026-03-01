@@ -18,6 +18,8 @@ model User {
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
   onboardingCompleted Boolean            @default(false)
+  resumeUploaded      Boolean            @default(false)
+  resumeProcessed     Boolean            @default(false)
   accounts            Account[]
   onboardingProfile   OnboardingProfile?
   progressLogs        ProgressLog[]
@@ -25,6 +27,7 @@ model User {
   sessions            Session[]
   subscription        Subscription?
   emailLogs           EmailLog[]
+  resumes             Resume[]
 }
 
 model Account {
@@ -145,14 +148,15 @@ enum SkillStatus {
 }
 
 model RoadmapTemplate {
-  id          String   @id @default(cuid())
-  inputsHash  String   @unique // The hash of normalized inputs
-  title       String
-  description String?
-  createdAt   DateTime @default(now())
+  id            String   @id @default(cuid())
+  inputsHash    String   @unique // The hash of normalized inputs
+  title         String
+  description   String?
+  missingSkills Json?
+  createdAt     DateTime @default(now())
   
-  phases      TemplatePhase[]
-  roadmaps    Roadmap[] // Instances of this template
+  phases        TemplatePhase[]
+  roadmaps      Roadmap[] // Instances of this template
 }
 
 model TemplatePhase {
@@ -277,4 +281,15 @@ model EmailTemplate {
   isActive    Boolean  @default(true)
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
+}
+
+model Resume {
+  id               String   @id @default(cuid())
+  userId           String
+  rawText          String   @db.Text
+  extractedSkills  Json
+  normalizedSkills Json
+  createdAt        DateTime @default(now())
+  
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

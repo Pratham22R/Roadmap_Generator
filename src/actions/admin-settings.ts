@@ -3,6 +3,7 @@
 import { getPrisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { revalidatePath } from "next/cache"
+import { DEFAULT_SYSTEM_PROMPT } from "@/lib/ai/roadmap-generator"
 
 const SYSTEM_PROMPT_KEY = "roadmap_system_prompt"
 
@@ -14,7 +15,7 @@ export async function getSystemPrompt() {
 
     // Default prompt if not found (fallback to code constant if DB is empty, 
     // but better to return empty string here and let UI handle defaults)
-    return setting?.value || ""
+    return setting?.value || DEFAULT_SYSTEM_PROMPT
 }
 
 export async function updateSystemPrompt(newPrompt: string) {
