@@ -19,7 +19,7 @@ const DEFAULT_PROMPT = `  You are a senior industry mentor and curriculum archit
   STRUCTURE RULES
   ────────────────────────────────────────
   
-  1. Divide into multiple PHASES (Foundations -> Advanced -> Mastery).
+  1. Divide into as many PHASES as necessary to cover the skills thoroughly from beginner to expert. Do NOT limit to just 3 phases; use however many are logically required.
   2. Each phase must have MANY TOPICS (minimum 6-12).
   3. **PERSONALIZATION**:
      - If user has "Existing Skills", DO NOT teach basics again.
@@ -79,32 +79,25 @@ const DEFAULT_PROMPT = `  You are a senior industry mentor and curriculum archit
   NO Markdown. NO Explanations. Just the JSON object.`
 
 async function main() {
-    console.log("📝 Verifying System Prompt configuration...")
+  console.log("📝 Upserting System Prompt configuration...")
 
-    const existing = await prisma.globalSettings.findUnique({
-        where: { key: SYSTEM_PROMPT_KEY }
-    })
-
-    if (!existing) {
-        console.log("⚙️  Initializing default system prompt...")
-        await prisma.globalSettings.create({
-            data: {
-                key: SYSTEM_PROMPT_KEY,
-                value: DEFAULT_PROMPT,
-                description: "System instructions for Gemini AI Roadmap Generation"
-            }
-        })
-        console.log("✅ System Prompt Initialized.")
-    } else {
-        console.log("✅ System Prompt already exists.")
+  await prisma.globalSettings.upsert({
+    where: { key: SYSTEM_PROMPT_KEY },
+    update: { value: DEFAULT_PROMPT },
+    create: {
+      key: SYSTEM_PROMPT_KEY,
+      value: DEFAULT_PROMPT,
+      description: "System instructions for Gemini AI Roadmap Generation"
     }
+  })
+  console.log("✅ System Prompt Upserted Successfully.")
 }
 
 main()
-    .catch((e) => {
-        console.error(e)
-        process.exit(1)
-    })
-    .finally(async () => {
-        await prisma.$disconnect()
-    })
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })

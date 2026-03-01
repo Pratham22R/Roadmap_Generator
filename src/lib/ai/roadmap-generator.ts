@@ -2,7 +2,9 @@ import { getPrisma } from "@/lib/prisma"
 import { GoogleGenAI } from "@google/genai"
 import { google } from "googleapis"
 import { inngest } from "@/lib/inngest/client"
-import { normalizeInputs, generateTemplateHash, type RoadmapRequest } from "./roadmap-utils"
+import { normalizeInputs, type RoadmapRequest } from "./roadmap-utils"
+import { computeMissingSkills } from "@/lib/roadmap/skillGapEngine"
+import { generateRoadmapHash } from "@/lib/cache/roadmapHash"
 import { z } from "zod"
 
 /* -------------------- AI SETUP -------------------- */
@@ -11,93 +13,9 @@ const genAI = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
 })
 
-const youtube = google.youtube({
-  version: "v3",
-  auth: process.env.YOUTUBE_API_KEY,
-})
-
-/* -------------------- ZOD SCHEMAS -------------------- */
-// We relax the URL requirement since we'll fetch it ourselves
-const YouTubeResourceSchema = z.object({
-  title: z.string(),
-  channel: z.string().optional(),
-  url: z.string().optional(),
-})
-
-const DocResourceSchema = z.object({
-  title: z.string(),
-  source: z.string(),
-  url: z.string().url()
-})
-
-const SkillSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  estimatedTime: z.string(),
-  youtube: YouTubeResourceSchema,
-  documentation: DocResourceSchema,
-})
-
-const PhaseSchema = z.object({
-  title: z.string(),
-  duration: z.string(),
-  skills: z.array(SkillSchema)
-})
-
-const RoadmapSchema = z.object({
-  roadmapTitle: z.string(),
-  description: z.string(),
-  phases: z.array(PhaseSchema)
-})
-
-type AIRoadmap = z.infer<typeof RoadmapSchema>
-
-/* -------------------- MAIN FUNCTION -------------------- */
-
-export async function generateRoadmap(
-  userId: string,
-  request: RoadmapRequest
-) {
-  const prisma = getPrisma()
-
-  /* -------------------- 1. NORMALIZE & HASH -------------------- */
-  const normalizedInput = normalizeInputs(request)
-  const templateHash = generateTemplateHash(normalizedInput)
-
-  /* -------------------- 2. CACHE CHECK -------------------- */
-  const existingTemplate = await prisma.roadmapTemplate.findUnique({
-    where: { inputsHash: templateHash },
-    include: {
-      phases: {
-        include: { skills: true }
-      }
-    }
-  })
-
-  // CACHE HIT
-  if (existingTemplate) {
-    console.log("✅ CACHE HIT: Reusing template", existingTemplate.id)
-    return createRoadmapFromTemplate(prisma, userId, existingTemplate.id, existingTemplate.title, existingTemplate.description ?? "")
-  }
-
-  /* -------------------- 3. GENERATION (CACHE MISS) -------------------- */
-  console.log("⚠️ CACHE MISS: Calling Gemini...")
-
-  /* -------------------- 3. GENERATION (CACHE MISS) -------------------- */
-  console.log("⚠️ CACHE MISS: Calling Gemini...")
-
-  // Fetch dynamic system prompt
-  const systemPromptSetting = await prisma.globalSettings.findUnique({
-    where: { key: "roadmap_system_prompt" }
-  })
-
-  let basePrompt = systemPromptSetting?.value || ""
-
-  // Fallback if DB is empty for some reason
-  if (!basePrompt) {
-    basePrompt = `You are a senior industry mentor and curriculum architect.
+export const DEFAULT_SYSTEM_PROMPT = `You are a senior industry mentor and curriculum architect.
   
-  Your task is to design a COMPLETE, highly detailed, job-ready learning roadmap.
+  Your task is to design a highly detailed, job-ready learning roadmap.
   
   ────────────────────────────────────────
   USER PROFILE
@@ -111,7 +29,7 @@ export async function generateRoadmap(
   STRUCTURE RULES
   ────────────────────────────────────────
   
-  1. Divide into multiple PHASES (Foundations -> Advanced -> Mastery).
+  1. Divide into as many PHASES as necessary to cover the skills thoroughly from beginner to expert. Do NOT limit to just 3 phases; use however many are logically required.
   2. Each phase must have MANY TOPICS (minimum 6-12).
   3. **PERSONALIZATION**:
      - If user has "Existing Skills", DO NOT teach basics again.
@@ -168,16 +86,111 @@ export async function generateRoadmap(
     }[];
   }
   
-  NO Markdown. NO Explanations. Just the JSON object.`
+  NO Markdown. NO Explanations. Just the JSON object.`;
+
+const youtube = google.youtube({
+  version: "v3",
+  auth: process.env.YOUTUBE_API_KEY,
+})
+
+/* -------------------- ZOD SCHEMAS -------------------- */
+// We relax the URL requirement since we'll fetch it ourselves
+const YouTubeResourceSchema = z.object({
+  title: z.string(),
+  channel: z.string().optional(),
+  url: z.string().optional(),
+})
+
+const DocResourceSchema = z.object({
+  title: z.string(),
+  source: z.string(),
+  url: z.string().url()
+})
+
+const SkillSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  estimatedTime: z.string(),
+  youtube: YouTubeResourceSchema,
+  documentation: DocResourceSchema,
+})
+
+const PhaseSchema = z.object({
+  title: z.string(),
+  duration: z.string(),
+  skills: z.array(SkillSchema)
+})
+
+const RoadmapSchema = z.object({
+  roadmapTitle: z.string(),
+  description: z.string(),
+  phases: z.array(PhaseSchema)
+})
+
+type AIRoadmap = z.infer<typeof RoadmapSchema>
+
+/* -------------------- MAIN FUNCTION -------------------- */
+
+export async function generateRoadmap(
+  userId: string,
+  request: RoadmapRequest
+) {
+  const prisma = getPrisma()
+
+  /* -------------------- 1. NORMALIZE & HASH -------------------- */
+  const normalizedInput = normalizeInputs(request)
+  const missingSkills = await computeMissingSkills(normalizedInput.careerGoal, normalizedInput.currentSkills)
+
+  const templateHash = generateRoadmapHash({
+    careerOrTopic: normalizedInput.careerGoal,
+    missingSkills,
+    experienceLevel: normalizedInput.experienceLevel,
+    dailyTime: normalizedInput.dailyTime,
+    targetDuration: normalizedInput.targetDuration
+  })
+
+  /* -------------------- 2. CACHE CHECK -------------------- */
+  const existingTemplate = await prisma.roadmapTemplate.findUnique({
+    where: { inputsHash: templateHash },
+    include: {
+      phases: {
+        include: { skills: true }
+      }
+    }
+  })
+
+  // CACHE HIT
+  if (existingTemplate) {
+    console.log("✅ CACHE HIT: Reusing template", existingTemplate.id)
+    return createRoadmapFromTemplate(prisma, userId, existingTemplate.id, existingTemplate.title, existingTemplate.description ?? "")
+  }
+
+  /* -------------------- 3. GENERATION (CACHE MISS) -------------------- */
+  console.log("⚠️ CACHE MISS: Calling Gemini...")
+
+  // Fetch dynamic system prompt
+  const systemPromptSetting = await prisma.globalSettings.findUnique({
+    where: { key: "roadmap_system_prompt" }
+  })
+
+  let basePrompt = systemPromptSetting?.value || ""
+
+  // Fallback if DB is empty for some reason
+  if (!basePrompt) {
+    basePrompt = DEFAULT_SYSTEM_PROMPT
   }
 
   // Inject variables
+  const missingSkillsInstruction = missingSkills.length > 0
+    ? `Generate a roadmap covering ONLY the following missing skills: ${missingSkills.join(", ")}. Do not include skills already known.`
+    : (request.currentSkills?.length ? `Existing Skills: ${request.currentSkills.join(", ")}` : "");
+
   const prompt = basePrompt
     .replace("{{careerGoal}}", request.careerGoal)
     .replace("{{experienceLevel}}", request.experienceLevel)
     .replace("{{dailyTime}}", request.dailyTime)
     .replace("{{targetDuration}}", request.targetDuration)
-    .replace("{{currentSkills}}", request.currentSkills?.length ? `Existing Skills: ${request.currentSkills.join(", ")}` : "")
+    .replace("{{currentSkills}}", missingSkillsInstruction)
 
   const result = await genAI.models.generateContent({
     model: "gemini-2.5-flash",
@@ -220,6 +233,7 @@ export async function generateRoadmap(
         inputsHash: templateHash,
         title: aiData.roadmapTitle,
         description: aiData.description,
+        missingSkills: missingSkills.length ? missingSkills : undefined
       }
     })
 
