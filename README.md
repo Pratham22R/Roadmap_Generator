@@ -14,7 +14,8 @@ The AI Skill Roadmap Generator is a SaaS platform where users input their career
 ## 2. Key Features
 
 - **Personalized Onboarding**: Tailors roadmaps based on experience level (Beginner/Intermediate/Pro), career goals, and daily time commitment.
-- **AI-Generated Skill Roadmaps**: Uses Google Gemini to create detailed, step-by-step curricula divided into phases (Foundations, Advanced, Mastery).
+- **Resume-Based Skill Extraction (New!)**: Users can optionally upload their resume (PDF/DOCX) during onboarding. The system uses Gemini to extract and normalize their current skills to bypass foundational topics they already know.
+- **AI-Generated Skill Roadmaps**: Uses Google Gemini to create detailed, step-by-step curricula dynamically adjusting the number of learning phases to thoroughly cover skill gaps.
 - **Project-Based Learning**: Roadmaps emphasize practical application with project suggestions and clear learning outcomes.
 - **Embedded YouTube Resources**: Automatically searches and embeds relevant, high-quality YouTube tutorials for every skill using the YouTube Data API.
 - **Roadmap Caching & Reuse**: Intelligent hashing of user inputs allows the system to reuse previously generated high-quality templates, significantly reducing AI costs and latency.
@@ -84,9 +85,9 @@ User Input -> Onboarding API -> Input Normalization & Hashing -> DB Cache Check 
 
 The core engine transforms raw user inputs into structured JSON.
 
-1. **Prompt Engineering**: Inputs (Goal: "Frontend Dev", Level: "Beginner") are injected into a strict system prompt.
+1. **Prompt Engineering**: Inputs (Goal, Experience, Time) and Missing Skills (computed by cross-referencing extracted resume skills with industry-standard role skills) are injected into a strict system prompt. The system prompt itself is dynamic, managed via the `GlobalSettings` database table (e.g., `seed-prompt.ts`).
 2. **Deterministic Output**: The prompt enforces a specific JSON schema (Phrases -> Skills -> Resources) to ensure the UI can always parse the result.
-3. **Phase-Based Design**: The AI is instructed to break learning into logical phases (e.g., "Web Fundamentals", "React Ecosystem") rather than a flat list.
+3. **Flexible Phase-Based Design**: The AI is instructed to divide learning into as many logical phases as necessary (rather than a strict 3-phase limit) to thoroughly cover the required skills.
 4. **Resource Verification**: The system attempts to resolve video titles to real YouTube URLs using the YouTube API, falling back to oEmbed verification, ensuring no broken links.
 
 ## 7. Roadmap Caching & Cost Optimization
@@ -123,8 +124,10 @@ Located at `/admin`, this secure area allows privileged management.
 
 ## 11. Database Design
 
-The Prisma schema is normalized for scale:
-- **Separation of Concerns**: `RoadmapTemplate` contains the curriculum (shared). `Roadmap` contains the linkage to a user. `SkillProgress` tracks individual user progress on specific skills.
+- **Separation of Concerns**: `RoadmapTemplate` contains the curriculum (shared). `Roadmap` contains the linkage to a user. `SkillProgress` tracks individual user progress.
+- **Career Engine**: Separated models for `CareerRole` and `Skill` map out industry-standard requirements, joined via `RoleSkill`.
+- **User Resumes**: The `Resume` model stores raw text and JSON arrays of extracted/normalized skills.
+- **System Configuration**: `GlobalSettings` allows dynamic tweaking of system components, such as the AI system prompt.
 - **Audit Logging**: `EmailLog` table tracks every email attempt for debugging.
 - **Safety**: `Cascade` deletions ensure that if a user is deleted, their personal data is wiped, but the *shared templates* they triggered remain for others.
 
@@ -191,13 +194,12 @@ Open `http://localhost:8288` to view the Inngest dashboard.
 
 ## 14. Project Status
 
-- **Implemented**: Core Authentication, AI Roadmap Generation, Caching System, Dashboard UI, Database Schema, Basic Admin Panel.
-- **In Progress**: Advanced Analytics, Resume Parsing integration.
+- **Implemented**: Core Authentication, AI Roadmap Generation, Resume Parsing & Skill Extraction, Dynamic Deep AI Prompts, Career Roles Hexagon UI, Caching System, Dashboard UI, Database Schema, Basic Admin Panel.
+- **In Progress**: Advanced Analytics, further UI iterations.
 - **Planned**: Mobile App (React Native), Community Project Sharing, AI Chatbot Mentor.
 
 ## 15. Future Enhancements
 
-- **Resume Analysis**: Upload a PDF resume and get a roadmap to fill skill gaps.
 - **GitHub Integration**: Analyze user's GitHub code to suggest projects.
 - **Job Recommendations**: Scrape job boards and map skills to open positions.
 - **AI Mentor Chatbot**: A side-panel chat for asking questions about specific roadmap topics.

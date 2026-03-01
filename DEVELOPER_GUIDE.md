@@ -82,26 +82,29 @@ The onboarding flow collects user preferences to generate a personalized roadmap
 *   **Page**: `src/app/onboarding/page.tsx`
     *   Renders the multi-step form.
 *   **Components**: `src/components/onboarding/onboarding-flow.tsx`
-    *   Client-side state for the wizard.
+    *   Client-side state for the wizard. Features a new Hexagon layout for career roles.
+*   **API Route**: `src/app/api/resume/upload/route.ts` (Resume parsing)
+    *   Extracts text from PDF/DOCX and passes it to Gemini to extract normalized skills.
 *   **Server Action**: `src/actions/onboarding.ts` (`submitOnboarding`)
     *   Validates input with Zod.
     *   Checks subscription limits.
     *   Saves `OnboardingProfile` to DB.
     *   **Triggers AI Generation**.
-*   **Database Model**: `OnboardingProfile`.
+*   **Database Model**: `OnboardingProfile`, `Resume`.
 
 ---
 
 ## 5. Skill Gap & Career Engine
 
-The system maps users to specific Career Roles (e.g., "Frontend Developer") to determine missing skills.
+The system maps users to specific Career Roles to determine missing skills and build accurate roadmaps.
 
 ### Key Files
 *   **Schema**: `CareerRole`, `RoleSkill`, `Skill` in `prisma/schema.prisma`.
-*   **Logic**:
-    *   Roles and default skills are seeded or managed via Admin.
-    *   During onboarding, selected "Current Skills" are compared against the target logic (handled in the AI Prompt mainly, but supported by DB data).
-*   **Admin Management**: `src/app/admin/career-roles` (implied).
+*   **Core Logic**: `src/lib/roadmap/skillGapEngine.ts`
+    *   Contains `computeMissingSkills(careerGoal, currentSkills)`.
+    *   Fetches the industry-standard skills for a database `CareerRole`.
+    *   Uses Gemini AI to semantically match the user's `currentSkills` against the standard skills, bypassing exact string-matching limitations, to output a clean array of purely missing topics.
+*   **Admin Management**: Managed via DB seeding arrays (`scripts/seed-roles.ts`).
 
 ---
 
@@ -118,12 +121,12 @@ This is the core engine. It uses Google's Gemini 2.5 Flash to generate structure
 
 ### Full Flow
 1.  **User Submits**: `submitOnboarding` calls `generateRoadmap`.
-2.  **Normalization**: Inputs (Goal, Experience, Time) are normalized and hashed.
-3.  **Cache Check**: Code checks `RoadmapTemplate` for `inputsHash`.
+2.  **Normalization & Gap Analysis**: Inputs are normalized, and `computeMissingSkills` calculates exact gaps.
+3.  **Cache Check**: Code hashes the logic and checks `RoadmapTemplate` for `inputsHash`.
     *   *Hit*: Clones existing template.
     *   *Miss*: Calls Gemini API.
-4.  **Prompt Construction**: `src/lib/ai/roadmap-generator.ts` builds a prompt using `roadmap_system_prompt` (from DB) or a fallback string.
-5.  **Gemini Call**: Requests JSON output.
+4.  **Prompt Construction**: `src/lib/ai/roadmap-generator.ts` builds a prompt using `roadmap_system_prompt` from `GlobalSettings` (defaults to a robust fallback if DB is empty). The prompt dictates unlimited flexible phases.
+5.  **Gemini Call**: Requests JSON output tailored purely to the missing skills.
 6.  **Parsing**: Validates response with `Zod` schemas.
 7.  **YouTube Enrichment**: For each skill, the system searches YouTube API (or uses oEmbed) to find real video links.
 8.  **Persist**: Saves `RoadmapTemplate` -> `TemplatePhase` -> `TemplateSkill`.
@@ -251,11 +254,11 @@ The `prisma/schema.prisma` file defines our data structure.
 
 ### Major Models
 *   **User / Account**: Identity.
-*   **RoadmapTemplate**: The "Master" copy of a generated roadmap (Cached).
-*   **Roadmap**: The "Instance" copy for a specific user.
-*   **TemplatePhase / TemplateSkill**: Structure of the roadmap.
-*   **SkillProgress**: User's tracking state on a skill.
-*   **CareerRole**: Definitions for the career engine.
+*   **RoadmapTemplate / TemplatePhase / TemplateSkill**: The shared curriculum definitions (Cached).
+*   **Roadmap / SkillProgress**: The user instance of the curriculum and their personal progress.
+*   **CareerRole / Skill / RoleSkill**: The normalized career skills database utilized by the skill gap engine.
+*   **Resume**: Stores user uploads, raw text extraction, and normalized skills array payload.
+*   **GlobalSettings**: Dynamic site configuration, such as storing the primary Gemini System Prompts.
 
 ---
 
