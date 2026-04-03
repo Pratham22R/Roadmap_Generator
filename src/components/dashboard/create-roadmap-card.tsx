@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -28,9 +28,13 @@ export function CreateRoadmapCard({ isPro, currentCount }: CreateRoadmapCardProp
 
     return (
         <>
-            <Card
+            <button
+                type="button"
                 onClick={handleClick}
-                className="h-full border border-dashed border-slate-300 bg-slate-50/50 group-hover:bg-blue-600 group-hover:border-blue-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center min-h-[250px] text-slate-500 group-hover:text-white rounded-2xl group relative overflow-hidden"
+                className={cn(
+                    "w-full h-full border border-dashed border-slate-300 bg-slate-50/50 hover:bg-blue-600 hover:border-blue-500 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center min-h-[250px] text-slate-500 hover:text-white rounded-2xl group relative overflow-hidden text-center",
+                    "bg-card text-card-foreground shadow-sm p-6"
+                )}
             >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none -z-10" />
 
@@ -44,7 +48,7 @@ export function CreateRoadmapCard({ isPro, currentCount }: CreateRoadmapCardProp
                         {currentCount} / {MAX_FREE_ROADMAPS} Free Used
                     </div>
                 )}
-            </Card>
+            </button>
 
             <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
                 <DialogContent className="bg-white border-slate-200 text-slate-900">
