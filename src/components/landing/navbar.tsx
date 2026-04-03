@@ -106,7 +106,7 @@ export function Navbar() {
                   Sign in
                 </Button>
               </Link>
-              <Link href="/register" onClick={() => setIsMobileMenuOpen(false)}>
+              <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
                 <Button className="w-full bg-black text-white rounded-xl h-12 text-base">Get started</Button>
               </Link>
             </nav>
