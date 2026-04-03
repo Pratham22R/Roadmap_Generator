@@ -23,9 +23,6 @@ export default auth((req) => {
 
   if (isOnDashboard) {
     if (isLoggedIn) {
-      if (!onboardingCompleted) {
-        return Response.redirect(new URL("/onboarding", req.nextUrl))
-      }
       return
     }
     return Response.redirect(new URL("/login", req.nextUrl))

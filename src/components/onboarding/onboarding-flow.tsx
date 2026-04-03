@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { submitOnboarding } from "@/actions/onboarding"
 import { ArrowRight, ChevronLeft, Check, X, Briefcase, Zap, Clock, Calendar, Search, UploadCloud, FileText, Trash2 } from "lucide-react"
@@ -12,6 +13,7 @@ import { Input } from "@/components/ui/input"
 
 export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: string, careerRoles?: { label: string, value: string }[] }) {
   const router = useRouter()
+  const { update } = useSession()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     careerGoal: "",
@@ -50,6 +52,7 @@ export default function OnboardingFlow({ userId, careerRoles = [] }: { userId?: 
       })
 
       if (result.success && result.roadmapId) {
+        await update()
         router.push(`/dashboard/roadmap/${result.roadmapId}`)
       } else {
         // Handle error (optional: show toast)
