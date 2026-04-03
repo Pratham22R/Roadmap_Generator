@@ -12,10 +12,11 @@ interface DetailedRoadmapPageProps {
 
 export default async function DetailedRoadmapPage({ params }: DetailedRoadmapPageProps) {
     const session = await auth()
-    if (!session?.user?.id) return redirect("/login")
+    const userId = session?.user?.id
+    if (!userId) return redirect("/login")
 
     // Fetch user streak for the view
-    const streak = await calculateStreak(session.user.id)
+    const streak = await calculateStreak(userId)
 
 
     const { id } = await params
@@ -24,7 +25,7 @@ export default async function DetailedRoadmapPage({ params }: DetailedRoadmapPag
     const roadmap = await prisma.roadmap.findUnique({
         where: {
             id: id,
-            userId: session.user.id // Security: Ensure user owns roadmap
+            userId: userId // Security: Ensure user owns roadmap
         },
         include: {
             // Include Template Data

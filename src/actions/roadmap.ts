@@ -6,7 +6,8 @@ import { revalidatePath } from "next/cache"
 
 export async function toggleSkillStatus(roadmapId: string, skillId: string, isCompleted: boolean) {
   const session = await auth()
-  if (!session?.user?.id) throw new Error("Unauthorized")
+  const userId = session?.user?.id
+  if (!userId) throw new Error("Unauthorized")
 
   const prisma = getPrisma()
   const status = isCompleted ? "COMPLETED" : "PENDING"
@@ -30,7 +31,7 @@ export async function toggleSkillStatus(roadmapId: string, skillId: string, isCo
   if (isCompleted) {
     await prisma.progressLog.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         itemId: skillId,
         itemType: "SKILL",
         action: "COMPLETED"

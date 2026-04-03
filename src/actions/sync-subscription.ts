@@ -7,16 +7,19 @@ import { revalidatePath } from "next/cache"
 
 export async function syncSubscriptionStatus() {
     const session = await auth()
-    if (!session?.user?.email) {
+    const userId = session?.user?.id
+    const userEmail = session?.user?.email
+
+    if (!userId || !userEmail) {
         throw new Error("Not authenticated")
     }
 
     try {
-        console.log("Syncing subscription for:", session.user.email)
+        console.log("Syncing subscription for:", userEmail)
 
         // 1. Get customer by email
         const listParams: any = {
-            email: session.user.email,
+            email: userEmail,
         }
         if (process.env.POLAR_ORGANIZATION_ID) {
             listParams.organizationId = process.env.POLAR_ORGANIZATION_ID
@@ -30,7 +33,7 @@ export async function syncSubscriptionStatus() {
         for await (const page of customersIterator) {
             console.log("Customer page received:", JSON.stringify(page, null, 2))
             if (page.result?.items) {
-                customer = page.result.items.find((c: any) => c.email === session.user.email)
+                customer = page.result.items.find((c: any) => c.email === userEmail)
                 if (customer) break;
             }
         }
@@ -60,14 +63,14 @@ export async function syncSubscriptionStatus() {
 
         if (activeSub) {
             await getPrisma().subscription.upsert({
-                where: { userId: session.user.id },
+                where: { userId: userId },
                 update: {
                     status: "PREMIUM",
                     polarSubscriptionId: activeSub.id,
                     currentPeriodEnd: activeSub.currentPeriodEnd ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
                 },
                 create: {
-                    userId: session.user.id,
+                    userId: userId,
                     status: "PREMIUM",
                     polarSubscriptionId: activeSub.id,
                     currentPeriodEnd: activeSub.currentPeriodEnd ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
