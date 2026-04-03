@@ -32,9 +32,7 @@ export default auth((req) => {
     if (!isLoggedIn) {
       return Response.redirect(new URL("/login", req.nextUrl))
     }
-    if (onboardingCompleted) {
-      return Response.redirect(new URL("/dashboard", req.nextUrl))
-    }
+    // Allow access to /onboarding for all logged-in users so they can generate new roadmaps
     return
   }
 })
